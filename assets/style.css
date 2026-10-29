@@ -142,7 +142,8 @@ table.prices td:nth-child(3){font-weight:800;white-space:nowrap}
 .ftr h3{color:#fff;font-size:17px;margin-bottom:8px}
 .ftr ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .ftr .lg{background:#fff;border-radius:12px;padding:8px 14px;display:inline-block}
-.ftr .lg img{height:46px;display:block}
+.ftr .lg{padding:10px 16px;align-self:flex-start}
+.ftr .lg img{height:64px;width:auto;max-width:100%;display:block}
 .ftr .bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:28px;padding-top:18px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
 
 /* mobile bar */
@@ -166,3 +167,14 @@ table.prices td:nth-child(3){font-weight:800;white-space:nowrap}
  .ftr{padding-bottom:110px}
 }
 @media (min-width:761px){.ftr{padding-bottom:40px}}
+
+/* סמל עדין של "אין כניסה לג'וקים" בכותרת הראשית */
+.hero .ov{position:relative;overflow:hidden}
+.nobug{position:absolute;left:5%;top:50%;transform:translateY(-50%) rotate(-8deg);width:min(30vw,340px);aspect-ratio:1;pointer-events:none;opacity:.9;z-index:0}
+.nobug svg{width:100%;height:100%;display:block}
+.nobug .bug{color:rgba(255,255,255,.16);fill-opacity:1}
+.nobug .ring{stroke:rgba(229,72,77,.55)}
+.hero .wrap{position:relative;z-index:1}
+.hero.sub .nobug{width:min(22vw,230px)}
+.nobug-mini{display:none}
+@media (max-width:760px){.hero .nobug{display:none}.nobug-mini{display:inline-block;width:58px;height:58px;margin-inline-start:auto;transform:rotate(-8deg);opacity:.9}.nobug-mini svg{width:100%;height:100%;display:block}.nobug-mini .bug{color:rgba(255,255,255,.2)}.nobug-mini .ring{stroke:rgba(229,72,77,.65)}.hero .price{width:100%}}
