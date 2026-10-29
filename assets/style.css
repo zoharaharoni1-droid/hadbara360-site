@@ -178,3 +178,15 @@ table.prices td:nth-child(3){font-weight:800;white-space:nowrap}
 .hero.sub .nobug{width:min(22vw,230px)}
 .nobug-mini{display:none}
 @media (max-width:760px){.hero .nobug{display:none}.nobug-mini{display:inline-block;width:58px;height:58px;margin-inline-start:auto;transform:rotate(-8deg);opacity:.9}.nobug-mini svg{width:100%;height:100%;display:block}.nobug-mini .bug{color:rgba(255,255,255,.2)}.nobug-mini .ring{stroke:rgba(229,72,77,.65)}.hero .price{width:100%}}
+
+/* תוכן עניינים */
+.toc{border:1px solid var(--line);border-radius:14px;padding:18px 22px;background:#fff}
+.toc strong{display:block;color:var(--navy);margin-bottom:8px}
+.toc ol{margin:0;padding-inline-start:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 24px}
+.toc a{color:var(--text2);text-decoration:none}.toc a:hover{color:var(--navy);text-decoration:underline}
+/* זיהוי מזיק לפי תמונה */
+.photoid{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;background:#E9F9EF;border:1px solid #B7E7C8;border-radius:16px;padding:20px 22px;margin-top:30px}
+.photoid strong{display:block;font-size:20px;color:var(--navy)}
+.photoid span{color:var(--text2)}
+.btn-w{background:#25D366;color:#fff}
+.btn-w:hover{background:#1fb457}
