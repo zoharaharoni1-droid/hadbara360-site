@@ -43,7 +43,7 @@ p{margin:0}
 .hero{position:relative;background:var(--navy) center/cover no-repeat;color:#fff}
 .hero .ov{background:rgba(1,36,52,.74)}
 .hero .wrap{padding-top:84px;padding-bottom:128px;display:flex;flex-direction:column;gap:22px;align-items:flex-start}
-.hero.sub .wrap{padding-top:28px;padding-bottom:72px}
+.hero.sub .wrap{padding-top:28px;padding-bottom:104px}
 .badge{display:inline-block;background:rgba(128,205,41,.18);border:1px solid rgba(128,205,41,.6);color:#CFF0A8;padding:6px 16px;border-radius:999px;font-size:15px;font-weight:600}
 .hero h1{font-size:clamp(38px,5.4vw,72px);max-width:860px}
 .hero .lead{font-size:clamp(19px,2vw,23px);color:#DCE8EE;max-width:660px}
