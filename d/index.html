@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>מסמך — הדברה 360</title>
+<style>
+  body{margin:0;font-family:Arial,'Segoe UI',sans-serif;background:#f6f8f6;color:#14301f;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
+  .card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:32px 26px;max-width:380px;width:calc(100% - 32px)}
+  img{height:64px;margin-bottom:14px}
+  a.btn{display:inline-block;margin-top:16px;background:#1a5c3a;color:#fff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:700;font-size:17px}
+  p{color:#4b5b51;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="/logo.png" alt="הדברה 360" onerror="this.style.display='none'">
+  <h1 style="font-size:20px;margin:0 0 6px">יומן ביצוע הדברה</h1>
+  <p id="msg">פותח את המסמך...</p>
+  <a class="btn" id="go" href="#" style="display:none">📄 פתח את המסמך</a>
+</div>
+<script>
+(function(){
+  var raw=(location.search||"").replace(/^\?/,"").split("&")[0];
+  var id=decodeURIComponent(raw||"").replace(/[^0-9A-Za-z_-]/g,"");
+  var msg=document.getElementById("msg"), go=document.getElementById("go");
+  if(!id){ msg.textContent="הקישור אינו תקין."; return; }
+  var parts=id.split("-"), num=parts[0]||"", d=parts[1]||"";
+  var date=d.length===6?(d.slice(0,2)+"."+d.slice(2,4)+".20"+d.slice(4,6)):"";
+  var name="יומן ביצוע "+num+" - הדברה 360"+(date?" - "+date:"")+".pdf";
+  var url="https://ilublhgawgfznxpdrfra.supabase.co/storage/v1/object/public/docs/"+id+".pdf?download="+encodeURIComponent(name);
+  go.href=url; go.style.display="inline-block";
+  msg.textContent="יומן ביצוע מס׳ "+num+(date?" מתאריך "+date:"")+". אם ההורדה לא התחילה — לחצו על הכפתור.";
+  setTimeout(function(){ location.href=url; },300);
+})();
+</script>
+</body>
+</html>
