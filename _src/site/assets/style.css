@@ -149,6 +149,8 @@ table.prices td:nth-child(3){font-weight:800;white-space:nowrap}
 .ctaband .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}
 .ctaband h2{flex:999 1 420px}
 .ctaband p{color:#C7D8E0;font-size:20px;margin-top:6px}
+.ctaband p.sos{font-size:17px;margin-top:14px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#E3EDF1}
+.ctaband p.sos a{color:#B9EF7E;font-weight:800}
 
 /* footer */
 .ftr{background:var(--navy-2);color:#B9CCD5;padding:48px 0 96px;font-size:16px}

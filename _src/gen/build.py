@@ -14,7 +14,7 @@ WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום!
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_ASSETS = os.path.join(ROOT, "site", "assets")
 OUT = os.path.join(ROOT, "dist")
-VER = "12"
+VER = "13"
 
 E = html.escape
 PEST_BY = {p["path"]: p for p in PESTS}
@@ -51,7 +51,7 @@ LB = {
   "@context":"https://schema.org","@type":"PestControl","name":"הדברה 360","url":DOMAIN+"/",
   "telephone":"+972-55-999-2266","email":"hadbara360@gmail.com","image":DOMAIN+"/assets/logo.png","priceRange":"₪₪",
   "areaServed":[c["name"] for c in CITIES if c["path"]!="הדברה-במרכז"],
-  "openingHours":"Mo-Su 00:00-23:59",
+  "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Sunday","Monday","Tuesday","Wednesday","Thursday"],"opens":"07:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"07:00","closes":"14:00"}],
   "description":"חברת הדברה מקצועית במרכז. רישיון מדביר ראשי מס׳ "+LICENSE+"."
 }
 
@@ -83,7 +83,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <header class="hdr"><div class="wrap">
 <a class="logo" href="/"><img src="/assets/logo.png" alt="הדברה 360 – לדף הבית" width="369" height="170"></a>
 <nav class="nav nav-d" aria-label="ניווט ראשי">{nav_links()}</nav>
-<a class="hphone" href="tel:{TEL}">{I_PHONE}<span><small>חייגו עכשיו, זמינים 24/7</small><strong>{PHONE}</strong></span></a>
+<a class="hphone" href="tel:{TEL}">{I_PHONE}<span><small>מענה מהיר · חירום גם בערב ובלילה</small><strong>{PHONE}</strong></span></a>
 <details class="menu"><summary aria-label="תפריט">{I_MENU}</summary><nav class="nav" aria-label="תפריט נייד"><a href="/">דף הבית</a>{nav_links()}</nav></details>
 </div></header>
 <main id="main">
@@ -103,13 +103,16 @@ def footer():
 <div><h3>הדברת מזיקים</h3><ul>{pests}<li><a href="{url("הדברת-מזיקים")}">כל המזיקים</a></li></ul></div>
 <div><h3>אזורי שירות</h3><ul>{cities}<li><a href="{url("אזורי-שירות")}">כל האזורים</a></li></ul></div>
 <div><h3>החברה</h3><ul><li><a href="{url("אודות")}">אודות</a></li><li><a href="{url("מחירון")}">מחירון הדברה</a></li><li><a href="{url("המלצות")}">ביקורות</a></li><li><a href="{url("שאלות-נפוצות")}">שאלות נפוצות</a></li><li><a href="{url("אחריות")}">אחריות</a></li></ul></div>
-<div><h3>צרו קשר</h3><ul><li><a href="tel:{TEL}" class="ltr">{PHONE}</a></li><li><a href="{E(WA)}" target="_blank" rel="noopener">וואטסאפ</a></li><li><a href="mailto:hadbara360@gmail.com">hadbara360@gmail.com</a></li><li>זמינים 24/7</li></ul></div>
+<div><h3>צרו קשר</h3><ul><li><a href="tel:{TEL}" class="ltr">{PHONE}</a></li><li><a href="{E(WA)}" target="_blank" rel="noopener">וואטסאפ</a></li><li><a href="mailto:hadbara360@gmail.com">hadbara360@gmail.com</a></li><li>א׳–ה׳ 7:00–21:00 · ו׳ 7:00–14:00</li><li><a href="{E(WA_SOS)}" target="_blank" rel="noopener">חירום בערב ובלילה – וואטסאפ</a></li></ul></div>
 </div>
 <div class="bottom"><span>© הדברה 360. כל הזכויות שמורות.</span><a href="{url("הצהרת-נגישות")}">הצהרת נגישות</a></div>
 </div></footer>'''
 
+WA_SOS = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום, יש לי מקרה חירום (מאתר הדברה 360): "
+SOS_LINE = f'<p class="sos">🚨 <strong>חירום בערב או בלילה?</strong> חולדה בבית, נחש, קן צרעות – <a href="{E(WA_SOS)}" target="_blank" rel="noopener">שלחו וואטסאפ</a>. נחזור בהקדם לפי זמינות, בתעריף חירום.</p>'
+
 def ctaband(h, p="הדברה החל מ־249 ₪ · ייעוץ והצעת מחיר בחינם."):
-    return f'<section class="ctaband"><div class="wrap"><div style="flex:999 1 420px"><h2>{h}</h2><p>{p}</p></div>{phone_btn(label="")}</div></section>'
+    return f'<section class="ctaband"><div class="wrap"><div style="flex:999 1 420px"><h2>{h}</h2><p>{p}</p>{SOS_LINE}</div>{phone_btn(label="")}</div></section>'
 
 HE_MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
 I_G = '<svg class="rev-g" width="20" height="20" viewBox="0 0 48 48" aria-label="Google" role="img"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>'
@@ -197,7 +200,7 @@ FEAT = f'''<div class="feat">
 <div><span class="ico">{I_LEAF}</span><span><strong>הדברה ירוקה</strong><span>חומרים מאושרים ובטוחים</span></span></div>
 <div><span class="ico">{I_AWARD}</span><span><strong>מדבירים מוסמכים</strong><span>רישיון מדביר בתוקף</span></span></div>
 <div><span class="ico">{I_SHIELD}</span><span><strong>אחריות מלאה</strong><span>אחריות בכתב על כל עבודה</span></span></div>
-<div><span class="ico">{I_CLOCK}</span><span><strong>שירות 24/7</strong><span>מענה מהיר לחירום</span></span></div>
+<div><span class="ico">{I_CLOCK}</span><span><strong>חירום גם בלילה</strong><span>מענה מהיר, גם בערב ובלילה</span></span></div>
 </div>
 <div class="lic"><a href="/assets/license.webp" target="_blank" rel="noopener" style="flex:none"><img src="/assets/license.webp" alt="רישיון מדביר במבנים ובשטח פתוח מטעם המשרד להגנת הסביבה, מספר רישיון {LICENSE}, על שם זוהר אהרוני" width="150" height="96" loading="lazy" style="display:block;width:150px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--line)"></a><span><strong style="display:block;font-size:18px">מדביר מורשה ע״י המשרד להגנת הסביבה</strong><span style="color:var(--muted);font-size:16px;display:block">רישיון מדביר במבנים ובשטח פתוח מס׳ {LICENSE}</span><span style="color:var(--muted);font-size:16px;display:block">בתוקף עד 02/2030 · לחצו להגדלה</span></span></div>'''
 
