@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /thank-you/
+Disallow: /_src/
 Sitemap: https://hadbara360.co.il/sitemap.xml
