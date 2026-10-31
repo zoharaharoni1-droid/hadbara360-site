@@ -205,5 +205,16 @@ table.prices td:nth-child(3){font-weight:800;white-space:nowrap}
 .photoid{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;background:#E9F9EF;border:1px solid #B7E7C8;border-radius:16px;padding:20px 22px;margin-top:30px}
 .photoid strong{display:block;font-size:20px;color:var(--navy)}
 .photoid span{color:var(--text2)}
-.btn-w{background:#25D366;color:#fff}
-.btn-w:hover{background:#1fb457}
+.btn-w{background:#157F3B;color:#fff}
+.btn-w:hover{background:#0E6A31}
+.gbox{margin-top:18px;padding:14px 18px;border-radius:14px;background:var(--mint);border:1px solid var(--line);font-size:17px}
+.gbox a{font-weight:700}
+.gmeta{color:var(--muted);font-size:15px;margin-bottom:18px}
+.gul{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.gul li::marker{color:var(--green-m)}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.gcard{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid #E9EFE6;border-radius:18px;padding:24px;text-decoration:none;color:var(--navy)}
+.gcard strong{font-size:21px;line-height:1.3}
+.gcard span{color:var(--text2);font-size:16px}
+.gcard em{font-style:normal;color:var(--green-d);font-weight:700;margin-top:auto}
+.gcard:hover{border-color:var(--green-m)}

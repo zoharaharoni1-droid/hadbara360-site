@@ -7,6 +7,7 @@ from deep_pests1 import DEEP_PESTS_1
 from deep_pests2 import DEEP_PESTS_2
 from deep_cities import CITIES_NEW, DEEP_CITIES
 from deep_combos import COMBO_PESTS, COMBO_CITIES, COMBOS
+from guides import GUIDES
 CITIES = CITIES[:-1] + CITIES_NEW + CITIES[-1:]   # "המרכז" נשאר אחרון
 DEEP_PESTS = {**DEEP_PESTS_1, **DEEP_PESTS_2}
 WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום! אני שולח/ת תמונה של מזיק לזיהוי (מאתר הדברה 360)"
@@ -14,7 +15,7 @@ WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום!
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_ASSETS = os.path.join(ROOT, "site", "assets")
 OUT = os.path.join(ROOT, "dist")
-VER = "13"
+VER = "14"
 
 E = html.escape
 PEST_BY = {p["path"]: p for p in PESTS}
@@ -74,6 +75,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <link rel="icon" href="/assets/icon.png"><link rel="apple-touch-icon" href="/assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&amp;display=swap">
+<link rel="preload" as="image" href="/assets/photo-sprayer.webp" fetchpriority="high">
 <link rel="stylesheet" href="/assets/style.css?v={VER}">
 {sch_html}
 </head>
@@ -81,7 +83,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <a class="skip" href="#main">דילוג לתוכן</a>
 <div class="promo"><b>מבצע</b>{E(PROMO)}, אמרו לנו "ראיתי באתר"</div>
 <header class="hdr"><div class="wrap">
-<a class="logo" href="/"><img src="/assets/logo.png" alt="הדברה 360 – לדף הבית" width="369" height="170"></a>
+<a class="logo" href="/"><img src="/assets/logo.webp" alt="הדברה 360 – לדף הבית" width="260" height="120" fetchpriority="high"></a>
 <nav class="nav nav-d" aria-label="ניווט ראשי">{nav_links()}</nav>
 <a class="hphone" href="tel:{TEL}">{I_PHONE}<span><small>מענה מהיר · חירום גם בערב ובלילה</small><strong>{PHONE}</strong></span></a>
 <details class="menu"><summary aria-label="תפריט">{I_MENU}</summary><nav class="nav" aria-label="תפריט נייד"><a href="/">דף הבית</a>{nav_links()}</nav></details>
@@ -99,10 +101,10 @@ def footer():
     cities = "".join(f'<li><a href="{url(c["path"])}">הדברה {c["prep"]}</a></li>' for c in CITIES[:6])
     return f'''<footer class="ftr"><div class="wrap">
 <div class="cols">
-<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.png" alt="הדברה 360" width="369" height="170"></span><span>חברת הדברה מקצועית. רישיון מדביר ראשי מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
+<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.webp" alt="הדברה 360" width="260" height="120" loading="lazy"></span><span>חברת הדברה מקצועית. רישיון מדביר ראשי מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
 <div><h3>הדברת מזיקים</h3><ul>{pests}<li><a href="{url("הדברת-מזיקים")}">כל המזיקים</a></li></ul></div>
 <div><h3>אזורי שירות</h3><ul>{cities}<li><a href="{url("אזורי-שירות")}">כל האזורים</a></li></ul></div>
-<div><h3>החברה</h3><ul><li><a href="{url("אודות")}">אודות</a></li><li><a href="{url("מחירון")}">מחירון הדברה</a></li><li><a href="{url("המלצות")}">ביקורות</a></li><li><a href="{url("שאלות-נפוצות")}">שאלות נפוצות</a></li><li><a href="{url("אחריות")}">אחריות</a></li></ul></div>
+<div><h3>החברה</h3><ul><li><a href="{url("אודות")}">אודות</a></li><li><a href="{url("מחירון")}">מחירון הדברה</a></li><li><a href="{url("המלצות")}">ביקורות</a></li><li><a href="{url("שאלות-נפוצות")}">שאלות נפוצות</a></li><li><a href="{url("בלוג")}">מדריכים</a></li><li><a href="{url("אחריות")}">אחריות</a></li></ul></div>
 <div><h3>צרו קשר</h3><ul><li><a href="tel:{TEL}" class="ltr">{PHONE}</a></li><li><a href="{E(WA)}" target="_blank" rel="noopener">וואטסאפ</a></li><li><a href="mailto:hadbara360@gmail.com">hadbara360@gmail.com</a></li><li>א׳–ה׳ 7:00–21:00 · ו׳ 7:00–14:00</li><li><a href="{E(WA_SOS)}" target="_blank" rel="noopener">חירום בערב ובלילה – וואטסאפ</a></li></ul></div>
 </div>
 <div class="bottom"><span>© הדברה 360. כל הזכויות שמורות.</span><a href="{url("הצהרת-נגישות")}">הצהרת נגישות</a></div>
@@ -290,6 +292,22 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 {ctaband("יש מזיק בבית? נפתור את זה היום.")}'''
 pages[""] = page("", "הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־249 ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home)
 
+# ---------------- Guides (blog) ----------------
+def gtext(s):
+    out = E(s)
+    return re.sub(r"\[\[([^|\]]+)\|([^\]]+)\]\]", lambda m: f'<a href="{url(html.unescape(m.group(2)))}">{m.group(1)}</a>', out)
+
+def gpath(g):
+    return "בלוג/" + g["slug"]
+
+def guides_for(path):
+    return [g for g in GUIDES if path in g["related"]]
+
+def guide_box(path):
+    gs = guides_for(path)
+    if not gs: return ""
+    return '<div class="gbox"><strong>מדריך מומלץ:</strong> ' + " · ".join(f'<a href="{url(gpath(g))}">{E(g["h1"])}</a>' for g in gs) + '</div>'
+
 # Pest pages
 for p in PESTS:
     d = DEEP_PESTS.get(p["path"], {})
@@ -319,6 +337,7 @@ for p in PESTS:
 <div class="signs">{signs}</div>
 {f'{H2("why","למה הם מגיעים",";margin-top:40px;font-size:30px")}<div class="prose" style="margin-top:14px">' + "".join(f"<p>{E(x)}</p>" for x in d["why"]) + (f'<p><strong>למה לא לחכות:</strong> {E(d["risks"])}</p>' if d.get("risks") else "") + '</div>' if d.get("why") else ""}
 {photo_id_box()}
+{guide_box(p["path"])}
 </div></section>
 <section class="sec soft"><div class="wrap narrow">
 {H2("treat","איך אנחנו מטפלים")}
@@ -505,6 +524,58 @@ body = f'''{sub_hero(trail, "ביקורות והמלצות", f"כל הביקור
 {ctaband("מצטרפים ללקוחות המרוצים?")}'''
 pages["המלצות"] = page("המלצות", "ביקורות והמלצות לקוחות | הדברה 360", "ביקורות אמיתיות מגוגל על הדברה 360: מקצועיות, אמינות, עמידה בזמנים ומחיר הוגן.", body, [crumbs_schema(trail)])
 
+# Blog
+pages_title_short = {p["path"]: p["h1"].split(":")[0] for p in PESTS}
+pages_title_short.update({s["path"]: s["h1"] for s in SERVICES})
+pages_title_short.update({combo_path(pk, cp): f'{COMBO_PESTS[pk]["short"]} {CITY_BY_ALL[cp]["prep"]}' for pk, cp in COMBOS})
+pages_title_short["מחירון"] = "מחירון הדברה"
+HE_MONTHS_FULL = HE_MONTHS
+def g_date(iso):
+    y, m, d = iso.split("-")
+    return f"{int(d)} ב{HE_MONTHS[int(m)-1]} {y}"
+for g in GUIDES:
+    gp = gpath(g)
+    trail = [("דף הבית",""),("מדריכים","בלוג"),(g["h1"], gp)]
+    secs = ""
+    toc = []
+    for i,(h, blocks) in enumerate(g["sections"]):
+        sid = f"s{i+1}"
+        toc.append((sid, h))
+        inner = ""
+        for bl in blocks:
+            if isinstance(bl, tuple) and bl[0] == "ul":
+                inner += '<ul class="gul">' + "".join(f"<li>{gtext(x)}</li>" for x in bl[1]) + "</ul>"
+            else:
+                inner += f"<p>{gtext(bl)}</p>"
+        secs += f'{H2(sid, E(h), ";margin-top:38px;font-size:30px")}<div class="prose" style="margin-top:14px">{inner}</div>'
+    toc.append(("faq","שאלות נפוצות"))
+    rel = "".join(f'<a class="chip" href="{url(r)}">{E(pages_title_short.get(r, r.split("/")[-1].replace("-"," ")))}</a>' for r in g["related"])
+    others = [o for o in GUIDES if o is not g]
+    more = "".join(f'<li><a href="{url(gpath(o))}">{E(o["h1"])}</a></li>' for o in others)
+    body = f'''{sub_hero(trail, E(g["h1"]), E(g["lead"]), show_price=False)}
+<article class="sec"><div class="wrap narrow">
+<p class="gmeta">מאת זוהר אהרוני, מדביר מוסמך (רישיון {LICENSE}) · {g_date(g["date"])}</p>
+{toc_html(toc)}
+{secs}
+{photo_id_box()}
+{H2("faq", "שאלות נפוצות", ";margin-top:40px;font-size:30px")}{faq_html(g["faq"])}
+<h2 style="font-size:24px;margin:38px 0 14px">עמודים קשורים</h2><div class="chips">{rel}</div>
+<h2 style="font-size:24px;margin:30px 0 10px">מדריכים נוספים</h2><ul class="gul">{more}</ul>
+</div></article>
+{ctaband("רוצים שמדביר מוסמך יבדוק? חייגו.")}'''
+    art = {"@context":"https://schema.org","@type":"Article","headline":g["h1"],"description":g["desc"],"datePublished":g["date"],"dateModified":g["date"],
+           "inLanguage":"he","mainEntityOfPage":abs_url(gp),"image":DOMAIN+"/assets/photo-sprayer.webp",
+           "author":{"@type":"Person","name":"זוהר אהרוני","jobTitle":"מדביר מוסמך","url":abs_url("אודות")},
+           "publisher":{"@type":"Organization","name":"הדברה 360","logo":{"@type":"ImageObject","url":DOMAIN+"/assets/logo.png"}}}
+    pages[gp] = page(gp, g["title"] + " | הדברה 360", g["desc"], body, [art, faq_schema(g["faq"]), crumbs_schema(trail)])
+
+trail = [("דף הבית",""),("מדריכים","בלוג")]
+cards = "".join(f'<a class="gcard" href="{url(gpath(g))}"><strong>{E(g["h1"])}</strong><span>{E(g["desc"])}</span><em>לקריאה ←</em></a>' for g in GUIDES)
+body = f'''{sub_hero(trail, "מדריכים וטיפים", "תשובות של מדביר מוסמך לשאלות הכי נפוצות: איך מזהים, מה עושים, כמה זה עולה ואיך מונעים.", show_price=False)}
+<section class="sec soft"><div class="wrap"><div class="gcards">{cards}</div></div></section>
+{ctaband("לא מצאתם תשובה? שאלו אותנו.")}'''
+pages["בלוג"] = page("בלוג", "מדריכים וטיפים להדברה | הדברה 360", "מדריכים של מדביר מוסמך: פשפש מיטה, מחירי הדברה, קן צרעות, ג׳וקים בחורף ועוד.", body, [crumbs_schema(trail)])
+
 # Prices
 trail = [("דף הבית",""),("מחירון","מחירון")]
 tables = ""
@@ -547,7 +618,7 @@ body = f'''<section class="sec"><div class="wrap narrow" style="text-align:cente
 pages["thank-you"] = page("thank-you", "תודה | הדברה 360", "תודה על פנייתכם.", body, noindex=True)
 
 # Old WordPress URLs -> home (works on any static host)
-for old in ["בלוג", "דוגמא-1", "category/uncategorized"]:
+for old in ["דוגמא-1", "category/uncategorized"]:
     pages[old] = f'<!doctype html><html lang="he"><head><meta charset="utf-8"><title>הדברה 360</title><link rel="canonical" href="{DOMAIN}/"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=/"></head><body><a href="/">לדף הבית</a></body></html>'
 
 # ---------------- WRITE ----------------
@@ -580,9 +651,7 @@ for path, htmltext in pages.items():
 nf = page("404", "העמוד לא נמצא | הדברה 360", "העמוד לא נמצא.", f'<section class="sec"><div class="wrap narrow" style="text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center"><h1 style="font-size:44px">העמוד לא נמצא</h1><p class="intro">אבל המזיקים כן? אנחנו כאן.</p>{phone_btn()}<a href="/">לדף הבית</a></div></section>', noindex=True)
 open(os.path.join(OUT, "404.html"), "w", encoding="utf-8").write(fix(nf))
 
-redirects = """/בלוג/  /  301
-/בלוג  /  301
-/דוגמא-1/  /  301
+redirects = """/דוגמא-1/  /  301
 /category/*  /  301
 /author/*  /  301
 /feed/*  /  301
@@ -591,7 +660,7 @@ redirects = """/בלוג/  /  301
 """
 open(os.path.join(OUT, "_redirects"), "w", encoding="utf-8").write(redirects)
 
-sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{abs_url(p)}</loc></url>\n" for p in pages if p not in ("thank-you","בלוג","דוגמא-1","category/uncategorized")) + "</urlset>\n"
+sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{abs_url(p)}</loc></url>\n" for p in pages if p not in ("thank-you","דוגמא-1","category/uncategorized")) + "</urlset>\n"
 open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write(sm)
 open(os.path.join(OUT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\nDisallow: /thank-you/\nDisallow: /_src/\nSitemap: {DOMAIN}/sitemap.xml\n")
 print("pages:", len(pages))
