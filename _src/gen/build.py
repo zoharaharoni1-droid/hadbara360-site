@@ -50,7 +50,7 @@ def nav_links():
 
 LB = {
   "@context":"https://schema.org","@type":"PestControl","name":"הדברה 360","url":DOMAIN+"/",
-  "telephone":"+972-55-999-2266","email":"hadbara360@gmail.com","image":DOMAIN+"/assets/logo.png","priceRange":"₪₪",
+  "telephone":"+972-55-999-2266","email":"hadbara360@gmail.com","image":DOMAIN+"/assets/logo-square.png","logo":DOMAIN+"/assets/logo-square.png","priceRange":"₪₪",
   "areaServed":[c["name"] for c in CITIES if c["path"]!="הדברה-במרכז"],
   "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Sunday","Monday","Tuesday","Wednesday","Thursday"],"opens":"07:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"07:00","closes":"14:00"}],
   "description":"חברת הדברה מקצועית במרכז. רישיון מדביר ראשי מס׳ "+LICENSE+"."
@@ -504,7 +504,7 @@ body = f'''{sub_hero(trail, "אודות הדברה 360", "מתמחים בהדב�
 <h3>שירות ואחריות</h3>
 <p>אנחנו מחויבים לשירות מקצועי ואמין. על כל הדברה ניתנת אחריות בכתב, לפי סוג המזיק.</p>
 </div>
-<div>{FEAT}</div>
+<div><img src="/assets/logo-mascot.webp" alt="הדברה 360 - לוגו החברה" width="260" height="260" loading="lazy" style="display:block;margin:0 auto 22px;width:260px;max-width:70%;height:auto">{FEAT}</div>
 </div></section>
 {ctaband("רוצים להכיר אותנו? התקשרו.")}'''
 pages["אודות"] = page("אודות", "אודות הדברה 360 | מדבירים מוסמכים", "הדברה 360: חברת הדברה מקצועית עם מדבירים מוסמכים, רישיון לכידת נחשים, חומרים מאושרים ואחריות בכתב.", body, [crumbs_schema(trail)])
@@ -566,7 +566,7 @@ for g in GUIDES:
     art = {"@context":"https://schema.org","@type":"Article","headline":g["h1"],"description":g["desc"],"datePublished":g["date"],"dateModified":g["date"],
            "inLanguage":"he","mainEntityOfPage":abs_url(gp),"image":DOMAIN+"/assets/photo-sprayer.webp",
            "author":{"@type":"Person","name":"זוהר אהרוני","jobTitle":"מדביר מוסמך","url":abs_url("אודות")},
-           "publisher":{"@type":"Organization","name":"הדברה 360","logo":{"@type":"ImageObject","url":DOMAIN+"/assets/logo.png"}}}
+           "publisher":{"@type":"Organization","name":"הדברה 360","logo":{"@type":"ImageObject","url":DOMAIN+"/assets/logo-square.png"}}}
     pages[gp] = page(gp, g["title"] + " | הדברה 360", g["desc"], body, [art, faq_schema(g["faq"]), crumbs_schema(trail)])
 
 trail = [("דף הבית",""),("מדריכים","בלוג")]
