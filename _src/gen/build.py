@@ -15,7 +15,7 @@ WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום!
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_ASSETS = os.path.join(ROOT, "site", "assets")
 OUT = os.path.join(ROOT, "dist")
-VER = "16"
+VER = "17"
 
 E = html.escape
 PEST_BY = {p["path"]: p for p in PESTS}
@@ -113,7 +113,7 @@ def footer():
 WA_SOS = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום, יש לי מקרה חירום (מאתר הדברה 360): "
 SOS_LINE = f'<p class="sos">🚨 <strong>חירום בערב או בלילה?</strong> חולדה בבית, נחש, קן צרעות – <a href="{E(WA_SOS)}" target="_blank" rel="noopener">שלחו וואטסאפ</a>. נחזור בהקדם לפי זמינות, בתעריף חירום.</p>'
 
-def ctaband(h, p="הדברה החל מ־249 ₪ · ייעוץ והצעת מחיר בחינם."):
+def ctaband(h, p="ייעוץ והצעת מחיר בחינם · מדביר מוסמך עם אחריות בכתב."):
     return f'<section class="ctaband"><div class="wrap"><div style="flex:999 1 420px"><h2>{h}</h2><p>{p}</p>{SOS_LINE}</div>{phone_btn(label="")}</div></section>'
 
 HE_MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
@@ -160,22 +160,15 @@ def crumbs_html(trail, dark=False):
     parts = [f'<a href="{url(p)}">{n}</a>' for n, p in trail[:-1]] + [f'<span aria-current="page">{trail[-1][0]}</span>']
     return f'<nav class="crumbs{" dark" if dark else ""}" aria-label="פירורי לחם">' + " › ".join(parts) + '</nav>'
 
-NOBUG = '''<div class="nobug" aria-hidden="true"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-<g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" class="bug">
-<path d="M52 34 Q44 20 34 16"/><path d="M68 34 Q76 20 86 16"/>
-<path d="M45 52 L30 46 L22 36"/><path d="M44 64 L28 66 L18 60"/><path d="M46 76 L32 86 L28 98"/>
-<path d="M75 52 L90 46 L98 36"/><path d="M76 64 L92 66 L102 60"/><path d="M74 76 L88 86 L92 98"/>
-</g>
-<ellipse class="bug" cx="60" cy="40" rx="9" ry="7" fill="currentColor"/>
-<ellipse class="bug" cx="60" cy="68" rx="16" ry="25" fill="currentColor"/>
-<path class="bug" d="M60 46 V92" stroke="rgba(1,36,52,.55)" stroke-width="2"/>
-<circle cx="60" cy="60" r="52" fill="none" class="ring" stroke-width="9"/>
-<path d="M23 23 L97 97" class="ring" stroke-width="9" stroke-linecap="round"/>
-</svg></div>'''
+def nobug(kind="roach", mini=False):
+    src = "/assets/no-ant.webp" if kind=="ant" else "/assets/no-roach.svg"
+    return f'<div class="{"nobug-mini" if mini else "nobug"}" aria-hidden="true"><img src="{src}" alt="" width="120" height="120" decoding="async"></div>'
+NOBUG = nobug()
 
-def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=True):
-    price = f'<div class="price"><span>הדברה החל מ־</span><strong>{PRICE_FROM} ₪</strong>{NOBUG.replace('class="nobug"','class="nobug-mini"')}</div>' if show_price else ''
-    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp')"><div class="ov">{NOBUG}<div class="wrap">
+def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=False, bug="roach"):
+    # מחיר "החל מ־" מוצג רק בעמוד הבית
+    price = ''
+    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp')"><div class="ov">{nobug(bug)}<div class="wrap">
 {crumbs_html(trail)}
 <h1 style="margin-top:20px">{h1}</h1>
 <p class="lead">{lead}</p>
@@ -262,7 +255,7 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 <span class="badge">רישיון מדביר ראשי מס׳ {LICENSE} · חומרים מאושרים ע״י המשרד להגנת הסביבה</span>
 <h1>אנחנו באים לפתור לכם את הבעיה!</h1>
 <p class="lead">הדברה מקצועית לכל סוגי המזיקים, לבתים, לבניינים ולעסקים. מדביר מוסמך מגיע אליכם בזמן, עם אחריות בכתב.</p>
-<div class="price"><span>הדברה החל מ־</span><strong>{PRICE_FROM} ₪</strong>{NOBUG.replace('class="nobug"','class="nobug-mini"')}</div>
+<div class="price"><span>הדברה החל מ־</span><strong>{PRICE_FROM} ₪</strong>{nobug(mini=True)}</div>
 <div class="ctas">{phone_btn()}{wa_btn()}</div>
 <ul class="checks"><li>ייעוץ והצעת מחיר בחינם</li><li>אחריות מלאה בכתב</li><li>הגעה בזמן שנקבע</li></ul>
 </div></div></section>
@@ -289,7 +282,7 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 <div><h2>איך זה עובד</h2>{STEPS}</div>
 <div><h2>אזורי שירות</h2><p class="intro" style="margin:16px 0">מגיעים אליכם בכל אזור המרכז:</p>{city_chips()}</div>
 </div></section>
-{ctaband("יש מזיק בבית? נפתור את זה היום.")}'''
+{ctaband("יש מזיק בבית? נפתור את זה היום.", f"הדברה החל מ־{PRICE_FROM} ₪ · ייעוץ והצעת מחיר בחינם.")}'''
 pages[""] = page("", "הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־249 ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home)
 
 # ---------------- Guides (blog) ----------------
@@ -328,7 +321,7 @@ for p in PESTS:
     combo_links = ""
     if combos_here:
         combo_links = '<div class="chips" style="margin-bottom:18px">' + "".join(f'<a class="chip" href="{url(combo_path(pk,cp))}">{COMBO_PESTS[pk]["short"]} {CITY_BY_ALL[cp]["prep"]}</a>' for pk,cp in combos_here) + '</div>'
-    body = f'''{sub_hero(trail, p["h1"] + " מקצועית, עם אחריות בכתב", E(p["intro"].split(". ")[0]) + ". מדביר מוסמך מגיע, מאבחן ומטפל עד הסוף.")}
+    body = f'''{sub_hero(trail, p["h1"] + " מקצועית, עם אחריות בכתב", E(p["intro"].split(". ")[0]) + ". מדביר מוסמך מגיע, מאבחן ומטפל עד הסוף.", bug=("ant" if "נמל" in p["name"] else "roach"))}
 <section class="sec"><div class="wrap narrow">
 {toc_html(toc)}
 {H2("about", f"מה צריך לדעת על {p['name']}", ";margin-top:34px")}
@@ -391,7 +384,7 @@ pages["שירותי-הדברה"] = page("שירותי-הדברה", "שירותי
 for c in CITIES:
     d = DEEP_CITIES.get(c["path"], {})
     trail = [("דף הבית",""),("אזורי שירות","אזורי-שירות"),(c["name"],c["path"])]
-    faqs = [(f"כמה עולה הדברה {c['prep']}?", f"הדברה מתחילה מ־{PRICE_FROM} ₪. המחיר הסופי תלוי בסוג המזיק ובגודל הנכס, ואנחנו נותנים הצעת מחיר בחינם בטלפון."),
+    faqs = [(f"כמה עולה הדברה {c['prep']}?", "המחיר תלוי בסוג המזיק, בגודל הנכס ובהיקף הנגיעות. מתקשרים, מתארים את הבעיה ומקבלים הצעת מחיר בחינם בטלפון."),
             ("אתם עובדים גם עם ועדי בית ועסקים?","כן. אנחנו מבצעים הדברה לשטחים משותפים, אחזקה שוטפת לבניינים ולמסעדות, והדברה למוסדות חינוך."),
             ("כמה זמן צריך לצאת מהבית?","בהדברה בריסוס בדרך כלל צריך לצאת לכשעה. בהדברה בג׳לים אין צורך לצאת. המדביר ייתן הנחיות מדויקות."),
             ("יש אחריות על העבודה?","כן, כל עבודה מקבלת אחריות בכתב.")] + d.get("faq", [])
@@ -438,7 +431,7 @@ for c in CITIES:
 <section class="sec soft"><div class="wrap narrow">{H2("faq", f"שאלות נפוצות: הדברה {c['prep']}")}{faq_html(faqs)}</div></section>
 <section class="sec"><div class="wrap narrow"><h2 style="font-size:26px;margin-bottom:16px">מגיעים גם לערים הסמוכות</h2>{city_chips([n for n in c["near"] if n in CITY_BY])}</div></section>
 {ctaband(f"צריכים מדביר {c['prep']}? דברו איתנו עכשיו.")}'''
-    pages[c["path"]] = page(c["path"], f'הדברה {c["prep"]} ✔ מדביר מוסמך מ־{PRICE_FROM} ₪ | הדברה 360', f'הדברה {c["prep"]}: מדביר מוסמך לדירות, בניינים ועסקים. חומרים מאושרים, אחריות בכתב והצעת מחיר בחינם. חייגו {PHONE}.', body, [faq_schema(faqs), crumbs_schema(trail)])
+    pages[c["path"]] = page(c["path"], f'הדברה {c["prep"]} ✔ מדביר מוסמך עם אחריות | הדברה 360', f'הדברה {c["prep"]}: מדביר מוסמך לדירות, בניינים ועסקים. חומרים מאושרים, אחריות בכתב והצעת מחיר בחינם. חייגו {PHONE}.', body, [faq_schema(faqs), crumbs_schema(trail)])
 
 # Pest + city pages
 for (pk, cp), cd in COMBOS.items():
@@ -455,7 +448,7 @@ for (pk, cp), cd in COMBOS.items():
     if dc.get("hoods"):
         hoods = f'<p style="margin-top:18px;color:var(--text2)"><strong>שכונות שבהן אנחנו עובדים:</strong> {E(", ".join(dc["hoods"]))} וכל שאר השכונות.</p>'
     toc = [("about", f"{P['short']} {c['prep']}"), ("signs","איך מזהים"), ("treat","איך מטפלים"), ("price","מחיר"), ("prevent","מניעה"), ("faq","שאלות נפוצות")]
-    body = f'''{sub_hero(trail, h1 + ": מדביר מוסמך עם אחריות", E(cd["intro"].split(". ")[0].rstrip(".")) + ".", "photo-window")}
+    body = f'''{sub_hero(trail, h1 + ": מדביר מוסמך עם אחריות", E(cd["intro"].split(". ")[0].rstrip(".")) + ".", "photo-window", bug=("ant" if "נמל" in P["short"] else "roach"))}
 <section class="sec"><div class="wrap narrow">
 {toc_html(toc)}
 {H2("about", h1, ";margin-top:34px")}
