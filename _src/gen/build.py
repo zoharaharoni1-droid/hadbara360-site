@@ -15,7 +15,7 @@ WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום!
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_ASSETS = os.path.join(ROOT, "site", "assets")
 OUT = os.path.join(ROOT, "dist")
-VER = "14"
+VER = "15"
 
 E = html.escape
 PEST_BY = {p["path"]: p for p in PESTS}
@@ -83,7 +83,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <a class="skip" href="#main">דילוג לתוכן</a>
 <div class="promo"><b>מבצע</b>{E(PROMO)}, אמרו לנו "ראיתי באתר"</div>
 <header class="hdr"><div class="wrap">
-<a class="logo" href="/"><img src="/assets/logo.webp" alt="הדברה 360 – לדף הבית" width="260" height="120" fetchpriority="high"></a>
+<a class="logo" href="/"><img src="/assets/logo.svg" alt="הדברה 360 – לדף הבית" width="348" height="160" fetchpriority="high"></a>
 <nav class="nav nav-d" aria-label="ניווט ראשי">{nav_links()}</nav>
 <a class="hphone" href="tel:{TEL}">{I_PHONE}<span><small>מענה מהיר · חירום גם בערב ובלילה</small><strong>{PHONE}</strong></span></a>
 <details class="menu"><summary aria-label="תפריט">{I_MENU}</summary><nav class="nav" aria-label="תפריט נייד"><a href="/">דף הבית</a>{nav_links()}</nav></details>
@@ -101,7 +101,7 @@ def footer():
     cities = "".join(f'<li><a href="{url(c["path"])}">הדברה {c["prep"]}</a></li>' for c in CITIES[:6])
     return f'''<footer class="ftr"><div class="wrap">
 <div class="cols">
-<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.webp" alt="הדברה 360" width="260" height="120" loading="lazy"></span><span>חברת הדברה מקצועית. רישיון מדביר ראשי מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
+<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.svg" alt="הדברה 360" width="348" height="160" loading="lazy"></span><span>חברת הדברה מקצועית. רישיון מדביר ראשי מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
 <div><h3>הדברת מזיקים</h3><ul>{pests}<li><a href="{url("הדברת-מזיקים")}">כל המזיקים</a></li></ul></div>
 <div><h3>אזורי שירות</h3><ul>{cities}<li><a href="{url("אזורי-שירות")}">כל האזורים</a></li></ul></div>
 <div><h3>החברה</h3><ul><li><a href="{url("אודות")}">אודות</a></li><li><a href="{url("מחירון")}">מחירון הדברה</a></li><li><a href="{url("המלצות")}">ביקורות</a></li><li><a href="{url("שאלות-נפוצות")}">שאלות נפוצות</a></li><li><a href="{url("בלוג")}">מדריכים</a></li><li><a href="{url("אחריות")}">אחריות</a></li></ul></div>
