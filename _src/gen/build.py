@@ -15,7 +15,7 @@ WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום!
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_ASSETS = os.path.join(ROOT, "site", "assets")
 OUT = os.path.join(ROOT, "dist")
-VER = "17"
+VER = "18"
 
 E = html.escape
 PEST_BY = {p["path"]: p for p in PESTS}
@@ -77,6 +77,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&amp;display=swap">
 <link rel="preload" as="image" href="/assets/photo-sprayer.webp" fetchpriority="high">
 <link rel="stylesheet" href="/assets/style.css?v={VER}">
+<script src="/assets/track.js?v={VER}"></script>
 {sch_html}
 </head>
 <body>

@@ -12,7 +12,7 @@
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
   function wa(n, ph, pe) {
     return 'https://api.whatsapp.com/send?phone=972559992266&text=' + encodeURIComponent(
-      'שלום, הגעתי מאתר הדברה 360 (10% הנחה).\nשם: ' + n + '\nטלפון: ' + ph + '\nמזיק: ' + pe + '\nאשמח שתחזרו אליי.');
+      'שלום, הגעתי מאתר הדברה 360 (10% הנחה).\nשם: ' + n + '\nטלפון: ' + ph + '\nמזיק: ' + pe + '\nאשמח שתחזרו אליי.' + (window.h360Source ? '\n(הגעתי דרך: ' + window.h360Source() + ')' : ''));
   }
   function err(html) { msg.style.color = '#B42318'; msg.innerHTML = html; }
 
@@ -34,10 +34,11 @@
       body: JSON.stringify({
         name: n.slice(0, 80), phone: ph.slice(0, 20), pest: pe.slice(0, 60),
         page_path: path.slice(0, 300), page_title: document.title.slice(0, 200),
-        referrer: (document.referrer || '').slice(0, 300)
+        referrer: (window.h360Attr ? window.h360Attr() : (document.referrer || '')).slice(0, 300)
       })
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);
+      if (window.h360Conv) window.h360Conv('lead', { pest: pe });
       f.innerHTML =
         '<div class="t" style="flex:1 1 100%"><strong>תודה ' + esc(n) + '! קיבלנו את הפרטים ✓</strong>' +
         '<span>נחזור אליכם בהקדם. רוצים מענה מהיר יותר?</span></div>' +
