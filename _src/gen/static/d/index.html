@@ -4,35 +4,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>מסמך — הדברה 360</title>
+<title>מסמך מהדברה 360</title>
+<meta property="og:title" content="הדברה 360 — המסמך שלך">
+<meta property="og:description" content="לחצו לצפייה במסמך ולהורדת PDF">
+<meta property="og:image" content="https://hadbara360.co.il/assets/logo-square.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1a5c3a">
+<link rel="icon" href="/assets/icon.png">
 <style>
-  body{margin:0;font-family:Arial,'Segoe UI',sans-serif;background:#f6f8f6;color:#14301f;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
-  .card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:32px 26px;max-width:380px;width:calc(100% - 32px)}
-  img{height:64px;margin-bottom:14px}
-  a.btn{display:inline-block;margin-top:16px;background:#1a5c3a;color:#fff;text-decoration:none;padding:13px 22px;border-radius:10px;font-weight:700;font-size:17px}
-  p{color:#4b5b51;line-height:1.6}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,'Segoe UI',sans-serif;background:#eef2ef;color:#14301f}
+  header{background:#fff;padding:14px 16px 12px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+  header img{height:46px}
+  h1{font-size:19px;margin:8px 0 2px;color:#1a5c3a}
+  .sub{font-size:14px;color:#4b5b51;margin:0}
+  #pages{max-width:820px;margin:14px auto 110px;padding:0 10px;display:flex;flex-direction:column;gap:12px}
+  #pages canvas{width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.10);display:block}
+  #msg{text-align:center;color:#4b5b51;padding:30px 16px;font-size:15px}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;box-shadow:0 -2px 12px rgba(0,0,0,.10);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center}
+  .bar a,.bar button{flex:1;max-width:340px;display:flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:12px;padding:14px 10px;font-size:17px;font-weight:700;font-family:inherit;text-decoration:none;cursor:pointer}
+  .dl{background:#1a5c3a;color:#fff}
+  .sh{background:#e8f2ec;color:#1a5c3a;max-width:150px!important}
+  footer{text-align:center;font-size:12px;color:#7a8a80;margin:-90px 0 100px}
+  footer a{color:#1a5c3a}
 </style>
 </head>
 <body>
-<div class="card">
+<header>
   <img src="/assets/logo.png" alt="הדברה 360" onerror="this.style.display='none'">
-  <h1 style="font-size:20px;margin:0 0 6px">יומן ביצוע הדברה</h1>
-  <p id="msg">פותח את המסמך...</p>
-  <a class="btn" id="go" href="#" style="display:none">📄 פתח את המסמך</a>
-</div>
+  <h1 id="ttl">המסמך שלך</h1>
+  <p class="sub" id="sub"></p>
+</header>
+<div id="pages"><div id="msg">⏳ טוען את המסמך…</div></div>
+<footer>הדברה 360 · <a href="tel:0559992266">055-9992266</a> · <a href="https://hadbara360.co.il">hadbara360.co.il</a></footer>
+<div class="bar"><a class="dl" id="dl" href="#">⬇️ הורדת PDF</a><button class="sh" id="sh" type="button" style="display:none">📤 שיתוף</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 (function(){
   var raw=(location.search||"").replace(/^\?/,"").split("&")[0];
   var id=decodeURIComponent(raw||"").replace(/[^0-9A-Za-z_-]/g,"");
-  var msg=document.getElementById("msg"), go=document.getElementById("go");
-  if(!id){ msg.textContent="הקישור אינו תקין."; return; }
-  var parts=id.split("-"), num=parts[0]||"", d=parts[1]||"";
+  var msg=document.getElementById("msg"), dl=document.getElementById("dl");
+  if(!id){ msg.textContent="הקישור אינו תקין."; dl.style.display="none"; return; }
+  var parts=id.split("-"), first=parts[0]||"", d=parts[1]||"";
+  var TYPES={R:"חשבונית מס/קבלה",I:"חשבונית מס",Q:"קבלה",C:"חשבונית זיכוי",E:"חשבון עסקה",D:"מסמך"};
+  var code=/^[A-Z]/.test(first)?first.charAt(0):"", num=code?first.slice(1):first;
+  var type=code?(TYPES[code]||"מסמך"):"יומן ביצוע";
   var date=d.length===6?(d.slice(0,2)+"."+d.slice(2,4)+".20"+d.slice(4,6)):"";
-  var name="יומן ביצוע "+num+" - הדברה 360"+(date?" - "+date:"")+".pdf";
-  var url="https://ilublhgawgfznxpdrfra.supabase.co/storage/v1/object/public/docs/"+id+".pdf?download="+encodeURIComponent(name);
-  go.href=url; go.style.display="inline-block";
-  msg.textContent="יומן ביצוע מס׳ "+num+(date?" מתאריך "+date:"")+". אם ההורדה לא התחילה — לחצו על הכפתור.";
-  setTimeout(function(){ location.href=url; },300);
+  document.getElementById("ttl").textContent=type+(num?" מס׳ "+num:"");
+  document.getElementById("sub").textContent=date?"מתאריך "+date:"";
+  document.title=type+" "+num+" — הדברה 360";
+  var name=type.replace("/","-")+" "+num+" - הדברה 360"+(date?" - "+date:"")+".pdf";
+  var base="https://ilublhgawgfznxpdrfra.supabase.co/storage/v1/object/public/docs/"+id+".pdf";
+  dl.href=base+"?download="+encodeURIComponent(name);
+  var fallback=function(){ msg.innerHTML="לחצו על <b>הורדת PDF</b> כדי לפתוח את המסמך."; };
+  if(!window.pdfjsLib){ fallback(); return; }
+  pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  var box=document.getElementById("pages");
+  pdfjsLib.getDocument(base).promise.then(function(pdf){
+    msg.remove();
+    var dpr=Math.min(window.devicePixelRatio||1,3), w=Math.min(box.clientWidth||360,820);
+    var chain=Promise.resolve();
+    for(var i=1;i<=pdf.numPages;i++)(function(n){ chain=chain.then(function(){ return pdf.getPage(n).then(function(pg){
+      var v0=pg.getViewport({scale:1}), sc=(w/v0.width)*dpr, vp=pg.getViewport({scale:sc});
+      var c=document.createElement("canvas"); c.width=vp.width; c.height=vp.height; box.appendChild(c);
+      return pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise; }); }); })(i);
+    // שיתוף הקובץ (טלפונים שתומכים)
+    pdf.getData().then(function(bytes){ try{ var f=new File([bytes],name,{type:"application/pdf"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){ var sh=document.getElementById("sh"); sh.style.display="flex";
+        sh.onclick=function(){ navigator.share({files:[f],title:document.title}).catch(function(){}); }; } }catch(e){} });
+  }).catch(function(){ msg.textContent="המסמך לא נמצא או שהקישור פג."; dl.style.display="none"; });
 })();
 </script>
 </body>
