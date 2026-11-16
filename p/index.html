@@ -71,22 +71,24 @@
     if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,function(){ prompt("העתיקו:",t); });
     else prompt("העתיקו:",t); }
   load().then(function(P){
-    if(!P||!P.amount) return fail("בקשת התשלום לא נמצאה.");
+    if(!P) return fail("בקשת התשלום לא נמצאה.");
+    var open=!(Number(P.amount)>0), AM=open?"":String(P.amount);
+    var AMT=function(){ return open?'<span class="amtv">—</span>':money(P.amount); };
     var C=P.cust||{}, biz=P.biz||{}, bizWa=String(biz.wa||"972559992266").replace(/\D/g,"");
-    document.title="תשלום "+money(P.amount)+" — הדברה 360";
+    document.title=(open?"תשלום":"תשלום "+money(P.amount))+" — הדברה 360";
     var methods=[];
     if(P.gw&&P.gw.url) methods.push({k:"card",ic:"💳",t:"אשראי · ביט · אפל פיי · גוגל פיי",body:'<div class="hint">תשלום מאובטח בדף של חברת הסליקה. אפשר לחלק לתשלומים.</div><a class="big go" id="gwgo" href="'+esc(P.gw.url)+'">לתשלום מאובטח ←</a>'});
-    if(P.bit&&P.bit.phone) methods.push({k:"bit",ic:"🔵",t:"ביט",body:'<div>פותחים את אפליקציית <b>ביט</b> ← העברת כסף ← למספר:</div><div class="kv"><b dir="ltr" style="text-align:right">'+esc(P.bit.phone)+'</b><button class="cp" data-c="'+esc(String(P.bit.phone).replace(/\D/g,""))+'">העתק</button></div><div class="kv"><span>סכום:</span><b>'+money(P.amount)+'</b><button class="cp" data-c="'+esc(P.amount)+'">העתק</button></div>'+(P.bit.name?'<div class="hint">על שם: '+esc(P.bit.name)+'</div>':"")});
-    if(P.paybox&&P.paybox.phone) methods.push({k:"paybox",ic:"🟣",t:"פייבוקס",body:'<div>באפליקציית <b>פייבוקס</b> — העברה למספר:</div><div class="kv"><b dir="ltr" style="text-align:right">'+esc(P.paybox.phone)+'</b><button class="cp" data-c="'+esc(String(P.paybox.phone).replace(/\D/g,""))+'">העתק</button></div><div class="kv"><span>סכום:</span><b>'+money(P.amount)+'</b></div>'});
+    if(P.bit&&P.bit.phone) methods.push({k:"bit",ic:"🔵",t:"ביט",body:'<div>פותחים את אפליקציית <b>ביט</b> ← העברת כסף ← למספר:</div><div class="kv"><b dir="ltr" style="text-align:right">'+esc(P.bit.phone)+'</b><button class="cp" data-c="'+esc(String(P.bit.phone).replace(/\D/g,""))+'">העתק</button></div><div class="kv"><span>סכום:</span><b>'+AMT()+'</b><button class="cp cpa" data-c="'+esc(AM)+'">העתק</button></div>'+(P.bit.name?'<div class="hint">על שם: '+esc(P.bit.name)+'</div>':"")});
+    if(P.paybox&&P.paybox.phone) methods.push({k:"paybox",ic:"🟣",t:"פייבוקס",body:'<div>באפליקציית <b>פייבוקס</b> — העברה למספר:</div><div class="kv"><b dir="ltr" style="text-align:right">'+esc(P.paybox.phone)+'</b><button class="cp" data-c="'+esc(String(P.paybox.phone).replace(/\D/g,""))+'">העתק</button></div><div class="kv"><span>סכום:</span><b>'+AMT()+'</b></div>'});
     if(P.bank&&P.bank.account){ var B=P.bank; methods.push({k:"bank",ic:"🏦",t:"העברה בנקאית",body:
       '<div class="kv"><span>בנק:</span><b>'+esc(B.name)+(B.code?" ("+esc(B.code)+")":"")+'</b></div>'+
       '<div class="kv"><span>סניף:</span><b>'+esc(B.branch)+'</b><button class="cp" data-c="'+esc(B.branch)+'">העתק</button></div>'+
       '<div class="kv"><span>חשבון:</span><b>'+esc(B.account)+'</b><button class="cp" data-c="'+esc(B.account)+'">העתק</button></div>'+
       '<div class="kv"><span>על שם:</span><b>'+esc(B.holder)+'</b></div>'+
-      '<div class="kv"><span>סכום:</span><b>'+money(P.amount)+'</b><button class="cp" data-c="'+esc(P.amount)+'">העתק</button></div>'}); }
+      '<div class="kv"><span>סכום:</span><b>'+AMT()+'</b><button class="cp cpa" data-c="'+esc(AM)+'">העתק</button></div>'}); }
     if(P.cash) methods.push({k:"cash",ic:"💵",t:"מזומן / צ׳ק למדביר",body:'<div class="hint">משלמים למדביר בביקור. בכל זאת כדאי למלא את הפרטים לחשבונית.</div>'});
     var html=''+
-      '<div class="card amt"><div class="lbl">בקשת תשלום'+(P.date?" · "+esc(P.date):"")+'</div><div class="sum">'+money(P.amount)+'</div>'+
+      '<div class="card amt"><div class="lbl">בקשת תשלום'+(P.date?" · "+esc(P.date):"")+'</div>'+(open?'<label style="text-align:center;margin-top:10px">כמה לשלם? (₪)</label><input id="f_amt" inputmode="decimal" style="text-align:center;font-size:26px;font-weight:800;color:#1a5c3a" placeholder="0">':'<div class="sum">'+money(P.amount)+'</div>')+
         '<div class="desc">'+esc(P.desc||"")+'</div>'+(P.note?'<div class="hint" style="margin-top:8px">'+esc(P.note)+'</div>':"")+'</div>'+
       '<div class="card"><h2>🧾 פרטים לחשבונית</h2><div class="hint">'+(C.name?"בדקו שהפרטים נכונים. אפשר לשנות — למשל לרשום את שם העסק שעל שמו תצא החשבונית.":"מלאו את הפרטים שעל שמם תצא החשבונית.")+'</div>'+
         '<label>שם לחשבונית (אדם או עסק)</label><input id="f_name" value="'+esc(C.name)+'" autocomplete="name">'+
@@ -104,12 +106,15 @@
       Array.prototype.forEach.call(app.querySelectorAll(".m"),function(x){x.classList.remove("on");}); if(on){ m.classList.add("on"); chosen=m.getAttribute("data-k"); } else chosen=""; }; });
     if(methods.length===1){ app.querySelector(".m").classList.add("on"); chosen=methods[0].k; }
     Array.prototype.forEach.call(app.querySelectorAll(".cp"),function(b){ b.onclick=function(e){ e.stopPropagation(); copy(b.getAttribute("data-c"),b); }; });
+    var curAmt=function(){ if(!open) return Number(P.amount); var x=parseFloat(String((document.getElementById("f_amt")||{}).value||"").replace(/[^0-9.]/g,"")); return x>0?x:0; };
+    if(open){ document.getElementById("f_amt").oninput=function(){ var a=curAmt(); Array.prototype.forEach.call(app.querySelectorAll(".amtv"),function(e){ e.textContent=a?money(a):"—"; }); Array.prototype.forEach.call(app.querySelectorAll(".cpa"),function(e){ e.setAttribute("data-c",a?String(a):""); }); }; }
     var v=function(id){ return (document.getElementById(id).value||"").trim(); };
     var names={card:"אשראי",bit:"ביט",paybox:"פייבוקס",bank:"העברה בנקאית",cash:"מזומן / צ׳ק"};
     document.getElementById("send").onclick=function(){
+      if(open&&!curAmt()){ alert("נא לרשום את הסכום ששילמתם"); document.getElementById("f_amt").focus(); return; }
       if(!v("f_name")){ alert("נא לרשום שם לחשבונית"); document.getElementById("f_name").focus(); return; }
       var t=["שלום, כאן "+v("f_name")+" 👋",
-        "שילמתי "+money(P.amount)+(chosen?" ב"+names[chosen]:"")+(P.desc?" עבור: "+P.desc:""),
+        "שילמתי "+money(curAmt())+(chosen?" ב"+names[chosen]:"")+(P.desc?" עבור: "+P.desc:""),
         P.ref?"מספר בקשה: "+P.ref:"","",
         "פרטים לחשבונית:","שם: "+v("f_name"),
         v("f_tax")?"ח.פ./ת.ז.: "+v("f_tax"):"", v("f_phone")?"טלפון: "+v("f_phone"):"",
