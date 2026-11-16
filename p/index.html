@@ -55,6 +55,7 @@
 (function(){
   var app=document.getElementById("app");
   var STORE="https://ilublhgawgfznxpdrfra.supabase.co/storage/v1/object/public/docs/";
+  var ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsdWJsaGdhd2dmem54cGRyZnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzMzMwNjAsImV4cCI6MjA5NjkwOTA2MH0.RMUX-pVuO4AGqtyGrAOxbW3RBPvBm6QnNeO0li6SY4E";
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function money(n){ var v=Math.round(Number(n||0)*100)/100; return "₪"+v.toLocaleString("he-IL",{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2}); }
   function b64dec(s){ s=s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; var bin=atob(s); var bytes=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
@@ -99,7 +100,7 @@
       '<div class="card"><h2>💰 איך תרצו לשלם?</h2>'+
         (methods.length?methods.map(function(m,i){ return '<div class="m" data-k="'+m.k+'"><button type="button"><span class="ic">'+m.ic+'</span>'+esc(m.t)+'<span class="ar">▾</span></button><div class="body">'+m.body+'</div></div>'; }).join(""):'<div class="hint">צרו קשר לתיאום התשלום.</div>')+
       '</div>'+
-      '<div class="card" id="done"><button class="big wa" id="send" type="button">✅ שילמתי — שליחת אישור ופרטים</button><div class="hint" style="margin:8px 0 0;text-align:center">נפתח וואטסאפ עם ההודעה מוכנה — רק ללחוץ שליחה. החשבונית תישלח אליכם.</div></div>';
+      '<div class="card" id="done"><button class="big go" id="send" type="button">✅ שילמתי — שליחת אישור ופרטים</button><div class="hint" style="margin:8px 0 0;text-align:center">אחרי שנאשר שהתשלום התקבל, החשבונית / הקבלה תישלח אליכם.</div></div>';
     app.innerHTML=html;
     var chosen="";
     Array.prototype.forEach.call(app.querySelectorAll(".m>button"),function(b){ b.onclick=function(){ var m=b.parentNode, on=!m.classList.contains("on");
@@ -119,7 +120,14 @@
         "פרטים לחשבונית:","שם: "+v("f_name"),
         v("f_tax")?"ח.פ./ת.ז.: "+v("f_tax"):"", v("f_phone")?"טלפון: "+v("f_phone"):"",
         v("f_email")?"אימייל: "+v("f_email"):"", v("f_addr")?"כתובת: "+v("f_addr"):""].filter(function(x,i,a){ return x!==""||(i>0&&a[i-1]!==""); }).join("\n");
-      location.href="https://wa.me/"+bizWa+"?text="+encodeURIComponent(t);
+      var rec={ref:P.ref||"",req_id:(location.search||"").replace(/^\?/,"").split("&")[0]||"",amount:curAmt(),method:chosen?names[chosen]:"",name:v("f_name"),tax_id:v("f_tax"),phone:v("f_phone"),email:v("f_email"),address:v("f_addr"),descr:P.desc||""};
+      var btn=document.getElementById("send"); btn.disabled=true; btn.textContent="⏳ שולח…";
+      var go=function(){ location.href="https://wa.me/"+bizWa+"?text="+encodeURIComponent(t); };
+      var done=function(ok){ document.getElementById("done").innerHTML='<div class="ok">'+(ok?"✅ תודה! הדיווח התקבל אצלנו.":"✅ תודה!")+'<br><span style="font-weight:400;font-size:14px">החשבונית / הקבלה תישלח אליכם אחרי שנאשר את קבלת התשלום.</span></div><button class="big soft" id="wa2" type="button" style="margin-top:10px">💬 שליחת הודעה בוואטסאפ (לא חובה)</button>'; document.getElementById("wa2").onclick=go; };
+      try{
+        fetch("https://ilublhgawgfznxpdrfra.supabase.co/rest/v1/pay_reports",{method:"POST",headers:{"Content-Type":"application/json","apikey":ANON,"Authorization":"Bearer "+ANON,"Prefer":"return=minimal"},body:JSON.stringify(rec)})
+          .then(function(r){ if(r.ok) done(true); else go(); }).catch(go);
+      }catch(e){ go(); }
     };
   }).catch(function(){ fail("בקשת התשלום לא נמצאה או שהקישור אינו תקין."); });
 })();
