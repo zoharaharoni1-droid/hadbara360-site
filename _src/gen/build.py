@@ -44,7 +44,7 @@ def phone_btn(cls="btn btn-g", label="חייגו: "):
 def wa_btn(cls="btn btn-o", label="וואטסאפ"):
     return f'<a class="{cls}" href="{E(WA)}" target="_blank" rel="noopener">{I_WA}{label}</a>'
 
-NAV = [("שירותי הדברה","שירותי-הדברה"),("סוגי מזיקים","הדברת-מזיקים"),("מחירון","מחירון"),("ביקורות","המלצות"),("אזורי שירות","אזורי-שירות"),("שאלות נפוצות","שאלות-נפוצות"),("אודות","אודות")]
+NAV = [("שירותי הדברה","שירותי-הדברה"),("סוגי מזיקים","הדברת-מזיקים"),("מחירון","מחירון"),("ביקורות","המלצות"),("אזורי שירות","אזורי-שירות"),("מדריכים","בלוג"),("שאלות נפוצות","שאלות-נפוצות"),("אודות","אודות")]
 
 def nav_links():
     return "".join(f'<a href="{url(p)}">{t}</a>' for t, p in NAV)
@@ -149,11 +149,18 @@ def rating_bar(big=False):
             f'<span>{d["count"]} ביקורות בגוגל</span></div>'
             f'<a class="btn rbar-w" href="{E(d["write_url"])}" target="_blank" rel="noopener">כתבו לנו ביקורת</a></div>')
 
+def faq_ans(a):  # [[טקסט|נתיב]] או [[טקסט|https://...]] → קישור
+    out = E(a)
+    return re.sub(r"\[\[([^|\]]+)\|([^\]]+)\]\]", lambda m: (f'<a href="{html.unescape(m.group(2))}" target="_blank" rel="noopener">{m.group(1)}</a>' if m.group(2).startswith("http") else f'<a href="{url(html.unescape(m.group(2)))}">{m.group(1)}</a>'), out)
+
+def faq_plain(a):
+    return re.sub(r"\[\[([^|\]]+)\|[^\]]+\]\]", r"\1", a)
+
 def faq_html(items):
-    return '<div class="faq">' + "".join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in items) + '</div>'
+    return '<div class="faq">' + "".join(f'<details><summary>{E(q)}</summary><p>{faq_ans(a)}</p></details>' for q, a in items) + '</div>'
 
 def faq_schema(items):
-    return {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q, a in items]}
+    return {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":faq_plain(a)}} for q, a in items]}
 
 def crumbs_schema(trail):
     return {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":i+1,"name":n,"item":abs_url(p)} for i,(n,p) in enumerate(trail)]}
@@ -276,6 +283,10 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 {pest_tiles(TOP_TILES)}
 {photo_id_box()}
 </div></section>
+<section class="sec" id="guides" style="padding-top:0"><div class="wrap">
+<div class="sec-head"><div><span class="eyebrow">מדריכים</span><h2>מדריכים מועילים</h2></div><a href="{url("בלוג")}" style="font-weight:700">לכל המדריכים ←</a></div>
+<div class="gcards">{"".join(f'<a class="gcard" href="{url("בלוג/"+g["slug"])}"><strong>{E(g["h1"])}</strong><span>{E(g["desc"])}</span><em>לקריאה ←</em></a>' for g in GUIDES[:3])}</div>
+</div></section>
 <section class="sec soft" id="reviews"><div class="wrap">
 <div class="sec-head"><div><span class="eyebrow">ביקורות מ־Google</span><h2>לקוחות ממליצים</h2></div><a href="{url("המלצות")}" style="font-weight:700">לכל {REVIEWS_DATA["count"]} הביקורות ←</a></div>
 {rating_bar()}{reviews_html(REVIEWS[:3])}
@@ -285,7 +296,7 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 <div><h2>אזורי שירות</h2><p class="intro" style="margin:16px 0">מגיעים אליכם בכל אזור המרכז:</p>{city_chips()}</div>
 </div></section>
 {ctaband("יש מזיק בבית? נפתור את זה היום.", f"הדברה החל מ־{PRICE_FROM} ₪ · ייעוץ והצעת מחיר בחינם.")}'''
-pages[""] = page("", "הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־249 ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home)
+pages[""] = page("", f"הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־{PRICE_FROM} ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home)
 
 # ---------------- Guides (blog) ----------------
 def gtext(s):
@@ -593,16 +604,25 @@ body = f'''{sub_hero(trail, "מדריכים וטיפים", "תשובות של מ
 pages["בלוג"] = page("בלוג", "מדריכים וטיפים להדברה | הדברה 360", "מדריכים של מדביר מוסמך: פשפש מיטה, מחירי הדברה, קן צרעות, ג׳וקים בחורף ועוד.", body, [crumbs_schema(trail)])
 
 # Prices
+PRICE_FAQ = [
+ ("למה המחיר הוא טווח ולא מחיר קבוע?","כי כל בית שונה: מספר החדרים, חצר, בורות ביוב והיקף הנגיעות משנים את כמות העבודה והחומר. בטלפון נשאל כמה שאלות קצרות וניתן מחיר מדויק."),
+ ("המחיר כולל מע״מ?","כן, כל המחירים באתר כוללים מע״מ."),
+ ("הייעוץ בטלפון עולה כסף?","לא. ייעוץ והצעת מחיר בטלפון בחינם."),
+ ("האם יש אחריות על הטיפול?","כן. על כל הדברה ניתנת אחריות בכתב, לפי סוג המזיק ושיטת הטיפול."),
+]
 trail = [("דף הבית",""),("מחירון","מחירון")]
 tables = ""
 for t, rows in PRICE_TABLES:
     trs = "".join(f"<tr><td><strong>{E(a)}</strong></td><td>{E(b)}</td><td>{E(c)}</td><td>{E(d)}</td></tr>" for a,b,c,d in rows)
     tables += f'<h2 style="font-size:28px;margin-top:40px">{E(t)}</h2><div class="tablebox"><table class="prices"><thead><tr><th scope="col">סוג מזיק</th><th scope="col">אופן ביצוע</th><th scope="col">מחיר</th><th scope="col">הערות</th></tr></thead><tbody>{trs}</tbody></table></div>'
 body = f'''{sub_hero(trail, "מחירון הדברה", "מחירים שקופים, בלי הפתעות. המחיר הסופי נקבע לפי גודל הנכס והיקף הנגיעות.")}
-<section class="sec"><div class="wrap narrow">{tables}
-<p style="margin-top:24px;color:var(--muted)">כל המחירים כוללים מע״מ. הצעת מחיר מדויקת ניתנת בטלפון, בחינם.</p></div></section>
+<section class="sec"><div class="wrap narrow">
+<div class="prose"><h2 style="font-size:28px">ממה מורכב המחיר?</h2><p>הדברה מתחילה מ־{PRICE_FROM} ₪ לדירה. המחיר הסופי נקבע לפי סוג המזיק, מספר החדרים, אם יש חצר, כמה בורות ביוב צריך לטפל, והיקף הנגיעות. בדירה רגילה המחיר נע בדרך כלל בין 250 ל־450 ₪, בדירת קרקע או בית עם חצר החל מ־350 ₪, ובווילה החל מ־650 ₪. התקשרו, ספרו מה קורה, ונמסור לכם מחיר מדויק בטלפון, בלי התחייבות.</p></div>
+{tables}
+<p style="margin-top:24px;color:var(--muted)">כל המחירים כוללים מע״מ. הצעת מחיר מדויקת ניתנת בטלפון, בחינם.</p>
+<div class="prose" style="margin-top:30px"><h2 style="font-size:26px">שאלות על המחיר</h2></div>{faq_html(PRICE_FAQ)}</div></section>
 {ctaband("רוצים הצעת מחיר מדויקת? חייגו.")}'''
-pages["מחירון"] = page("מחירון", "מחירון הדברה 2026: תיקנים, נמלים, מכרסמים ועוד | הדברה 360", "מחירון הדברה מעודכן לדירות ולבתים: תיקנים, נמלים, פרעושים, מכרסמים, כיני יונים, צרעות ועוד. הצעת מחיר בחינם.", body, [crumbs_schema(trail)])
+pages["מחירון"] = page("מחירון", "מחירון הדברה 2026: תיקנים, נמלים, מכרסמים ועוד | הדברה 360", f"מחירון הדברה מעודכן: הדברה לדירה החל מ־{PRICE_FROM} ₪, לבית עם חצר החל מ־350 ₪. תיקנים, נמלים, פרעושים, מכרסמים, כיני יונים, צרעות ועוד. הצעת מחיר בחינם.", body, [crumbs_schema(trail), faq_schema(PRICE_FAQ)])
 
 # Warranty
 trail = [("דף הבית",""),("אחריות","אחריות")]
