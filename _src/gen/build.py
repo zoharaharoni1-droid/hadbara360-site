@@ -6,6 +6,7 @@ from content import *
 from deep_pests1 import DEEP_PESTS_1
 from deep_pests2 import DEEP_PESTS_2
 from deep_cities import CITIES_NEW, DEEP_CITIES
+from deep_local import LOCAL
 from deep_combos import COMBO_PESTS, COMBO_CITIES, COMBOS
 from guides import GUIDES
 CITIES = CITIES[:-1] + CITIES_NEW + CITIES[-1:]   # "המרכז" נשאר אחרון
@@ -289,6 +290,7 @@ pages[""] = page("", "הדברה 360 | חברת הדברה מקצועית במר
 # ---------------- Guides (blog) ----------------
 def gtext(s):
     out = E(s)
+    out = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", out)
     return re.sub(r"\[\[([^|\]]+)\|([^\]]+)\]\]", lambda m: f'<a href="{url(html.unescape(m.group(2)))}">{m.group(1)}</a>', out)
 
 def gpath(g):
@@ -382,13 +384,27 @@ body = f'''{sub_hero(trail, "שירותי הדברה", "הדברה לדירות,
 pages["שירותי-הדברה"] = page("שירותי-הדברה", "שירותי הדברה לבית ולעסק | הדברה 360", "שירותי הדברה: דירות, בתים פרטיים, בניינים, מסעדות, מוסדות חינוך, הדברה ללא ריסוס, הרחקת יונים ולכידת נחשים.", body, [crumbs_schema(trail)])
 
 # Cities
-for c in CITIES:
-    d = DEEP_CITIES.get(c["path"], {})
+for ci, c in enumerate(CITIES):
+    d = DEEP_CITIES.get(c["path"], {}); L = LOCAL.get(c["path"], {})
     trail = [("דף הבית",""),("אזורי שירות","אזורי-שירות"),(c["name"],c["path"])]
     faqs = [(f"כמה עולה הדברה {c['prep']}?", "המחיר תלוי בסוג המזיק, בגודל הנכס ובהיקף הנגיעות. מתקשרים, מתארים את הבעיה ומקבלים הצעת מחיר בחינם בטלפון."),
             ("אתם עובדים גם עם ועדי בית ועסקים?","כן. אנחנו מבצעים הדברה לשטחים משותפים, אחזקה שוטפת לבניינים ולמסעדות, והדברה למוסדות חינוך."),
             ("כמה זמן צריך לצאת מהבית?","בהדברה בריסוס בדרך כלל צריך לצאת לכשעה. בהדברה בג׳לים אין צורך לצאת. המדביר ייתן הנחיות מדויקות."),
             ("יש אחריות על העבודה?","כן, כל עבודה מקבלת אחריות בכתב.")] + d.get("faq", [])
+    if L.get("types"):  # ערים במעגל הראשון: פחות שאלות כלליות, יותר מקומיות
+        faqs = [faqs[0], faqs[3]] + L.get("faq", []) + d.get("faq", [])
+    elif L.get("faq"):
+        faqs = faqs + L["faq"]
+    arrive = f'<div style="margin-top:22px;background:#eef7f1;border:1px solid #cfe6d8;border-radius:14px;padding:16px 18px"><b style="font-size:18px">🚐 מדבירים באזור, הגעה מהירה</b><p style="margin:6px 0 0">{E(L["arrive"])}</p></div>' if L.get("arrive") else ""
+    season = f'<div class="prose" style="margin:14px 0 22px"><h3>מה אנחנו רואים {c["prep"]} לאורך השנה</h3><p>{E(L["season"])}</p></div>' if L.get("season") else ""
+    if L.get("types"):
+        types_html = "".join(f"<h3>{E(t)}</h3><p>{E(x)}</p>" for t, x in L["types"])
+    else:
+        types_html = f"""<h3>דירה בבניין</h3><p>בדירה, רוב המזיקים מגיעים מהביוב, מהשטחים המשותפים או מדירות שכנות. אנחנו מטפלים בניקוזים, בפנלים ובנקודות הכניסה, ומתאימים את השיטה לבית: ריסוס, ג׳לים או מלכודות. בבית עם תינוקות או חיות מחמד אפשר לבחור בטיפול ללא ריסוס.</p>
+<h3>בית פרטי או דירת גן</h3><p>בבית עם חצר המזיקים מגיעים בעיקר מבחוץ: מהגינה, מבורות הביוב, מהמחסן ומעצים שנוגעים בבית. לכן הטיפול כולל גם את החצר, את הביובים ואת הצמחייה, ולא רק את הבית עצמו.</p>
+<h3>בניין משותף וועד בית</h3><p>הדברה של הלובי, חדרי המדרגות, חדר האשפה, המקלט, החניון ובורות הביוב מונעת מהמזיקים לחזור לדירות. אנחנו מציעים לוועדי בית {c['prep']} גם אחזקה שוטפת בתדירות קבועה.</p>
+<h3>עסקים, מסעדות ומשרדים</h3><p>בעסקים אנחנו עובדים בשעות שלא מפריעות לפעילות, בחומרים מאושרים, ומספקים יומן ביצוע מסודר אחרי כל טיפול. למסעדות ולעסקי מזון אנחנו מציעים אחזקה שוטפת.</p>"""
+    rv = [REVIEWS[(ci*2) % len(REVIEWS)], REVIEWS[(ci*2+1) % len(REVIEWS)]]
     about = "".join(f'<p>{E(x)}</p>' for x in d.get("about", []))
     hoods = ""
     if d.get("hoods"):
@@ -406,29 +422,28 @@ for c in CITIES:
 {toc_html(toc)}
 {H2("about", f"שירותי הדברה {c['prep']}", ";margin-top:34px")}
 <div class="prose" style="margin-top:16px"><p>{E(c["local"])}</p>{about}{f"<p>{E(d['homes'])}</p>" if d.get("homes") else ""}</div>
+{arrive}
 {hoods}
 <div class="cards" style="margin-top:28px">{serv_card(SERV_BY["הדברה-בדירות"],"טיפול נקי ושקט, כולל אפשרות להדברה ללא ריסוס.")}{serv_card(SERV_BY["הדברת-בניינים"],"לובי, חדרי אשפה, מקלטים, ביובים ואחזקה שוטפת.")}{serv_card(SERV_BY["אחזקה-שותפת-למסעדות"],"אחזקה שוטפת לעסקי מזון, בשעות שמתאימות לכם.")}</div>
 </div></section>
 <section class="sec soft"><div class="wrap narrow">{H2("pests", f"המזיקים הנפוצים {c['prep']}")}
+{season}
 {pests_list}
 {combo_links}
 </div></section>
 <section class="sec"><div class="wrap narrow">{H2("types", f"הדברה {c['prep']} לפי סוג הנכס")}
 <div class="prose" style="margin-top:16px">
-<h3>דירה בבניין</h3><p>בדירה, רוב המזיקים מגיעים מהביוב, מהשטחים המשותפים או מדירות שכנות. אנחנו מטפלים בניקוזים, בפנלים ובנקודות הכניסה, ומתאימים את השיטה לבית: ריסוס, ג׳לים או מלכודות. בבית עם תינוקות או חיות מחמד אפשר לבחור בטיפול ללא ריסוס.</p>
-<h3>בית פרטי או דירת גן</h3><p>בבית עם חצר המזיקים מגיעים בעיקר מבחוץ: מהגינה, מבורות הביוב, מהמחסן ומעצים שנוגעים בבית. לכן הטיפול כולל גם את החצר, את הביובים ואת הצמחייה, ולא רק את הבית עצמו.</p>
-<h3>בניין משותף וועד בית</h3><p>הדברה של הלובי, חדרי המדרגות, חדר האשפה, המקלט, החניון ובורות הביוב מונעת מהמזיקים לחזור לדירות. אנחנו מציעים לוועדי בית {c['prep']} גם אחזקה שוטפת בתדירות קבועה.</p>
-<h3>עסקים, מסעדות ומשרדים</h3><p>בעסקים אנחנו עובדים בשעות שלא מפריעות לפעילות, בחומרים מאושרים, ומספקים יומן ביצוע מסודר אחרי כל טיפול. למסעדות ולעסקי מזון אנחנו מציעים אחזקה שוטפת.</p>
+{types_html}
 </div></div></section>
 <section class="sec soft"><div class="wrap narrow">{H2("all", f"כל סוגי ההדברה {c['prep']}")}
-<div class="signs">{"".join(f'<div><a href="{url(q["path"])}" style="font-weight:800">{E(q["h1"].split(":")[0])}</a><br><span style="color:var(--text2)">{E(q["intro"].split(". ")[0].rstrip("."))}.</span></div>' for q in PESTS)}</div></div></section>
+<div class="chips" style="margin-top:14px">{"".join(f'<a class="chip" href="{url(q["path"])}">{E(q["h1"].split(":")[0])}</a>' for q in PESTS)}</div></div></section>
 <section class="sec"><div class="wrap narrow">{H2("prices", f"מחירי הדברה {c['prep']}")}{mini_prices()}
 {photo_id_box()}</div></section>
 <section class="sec soft"><div class="wrap narrow split" style="align-items:flex-start">
 <div>{H2("how","איך זה עובד",";font-size:30px")}{STEPS}</div>
 <div>{f'<h2 style="font-size:30px">טיפים {c["prep"]}</h2>' + ul(d["tips"]) if d.get("tips") else ""}</div>
 </div></section>
-<section class="sec"><div class="wrap narrow"><h2>לקוחות ממליצים</h2><div style="margin-top:22px">{reviews_html([REVIEWS[2], REVIEWS[3]])}</div></div></section>
+<section class="sec"><div class="wrap narrow"><h2>לקוחות ממליצים</h2><div style="margin-top:22px">{reviews_html(rv)}</div></div></section>
 <section class="sec soft"><div class="wrap narrow">{H2("faq", f"שאלות נפוצות: הדברה {c['prep']}")}{faq_html(faqs)}</div></section>
 <section class="sec"><div class="wrap narrow"><h2 style="font-size:26px;margin-bottom:16px">מגיעים גם לערים הסמוכות</h2>{city_chips([n for n in c["near"] if n in CITY_BY])}</div></section>
 {ctaband(f"צריכים מדביר {c['prep']}? דברו איתנו עכשיו.")}'''
@@ -539,6 +554,13 @@ for g in GUIDES:
         for bl in blocks:
             if isinstance(bl, tuple) and bl[0] == "ul":
                 inner += '<ul class="gul">' + "".join(f"<li>{gtext(x)}</li>" for x in bl[1]) + "</ul>"
+            elif isinstance(bl, tuple) and bl[0] == "table":  # טבלת השוואה: כרטיס לכל שורה, נוח גם בטלפון
+                hd = bl[1]
+                inner += '<div class="cmpcards" style="display:grid;gap:12px;margin:18px 0">' + "".join(
+                    '<div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px">'
+                    f'<div style="font-weight:800;font-size:19px;margin-bottom:6px">{gtext(r[0])}</div>'
+                    + "".join(f'<div style="margin-top:4px"><b style="color:var(--text2);font-weight:700">{E(hd[k])}:</b> {gtext(r[k])}</div>' for k in range(1, len(r)))
+                    + '</div>' for r in bl[2]) + '</div>'
             else:
                 inner += f"<p>{gtext(bl)}</p>"
         secs += f'{H2(sid, E(h), ";margin-top:38px;font-size:30px")}<div class="prose" style="margin-top:14px">{inner}</div>'
