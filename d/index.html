@@ -68,7 +68,7 @@
   if(!id){ app.innerHTML='<div id="msg">הקישור אינו תקין.</div>'; dl.style.display="none"; return; }
   var parts=id.split("-"), first=parts[0]||"", d=parts[1]||"";
   var TYPES={R:"חשבונית מס/קבלה",I:"חשבונית מס",Q:"קבלה",C:"חשבונית זיכוי",E:"חשבון עסקה",D:"מסמך"};
-  var code=/^[A-Z]/.test(first)?first.charAt(0):"", num=code?first.slice(1):first;
+  var code=/^[A-Z]/.test(first)?first.charAt(0):"", num=code?first.slice(1):first; if(code&&/^\d+$/.test(num)) num=num.padStart(4,"0");
   var type=code?(TYPES[code]||"מסמך"):"יומן ביצוע";
   var date=d.length===6?(d.slice(0,2)+"/"+d.slice(2,4)+"/20"+d.slice(4,6)):"";
   document.title=type+" "+num+" — הדברה 360";
