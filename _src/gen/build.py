@@ -54,10 +54,10 @@ LB = {
   "telephone":"+972-55-999-2266","email":"hadbara360@gmail.com","image":DOMAIN+"/assets/logo-square.png","logo":DOMAIN+"/assets/logo-square.png","priceRange":"₪₪",
   "areaServed":[c["name"] for c in CITIES if c["path"]!="הדברה-במרכז"],
   "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Sunday","Monday","Tuesday","Wednesday","Thursday"],"opens":"07:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"07:00","closes":"14:00"}],
-  "description":"חברת הדברה מקצועית במרכז. רישיון מדביר ראשי מס׳ "+LICENSE+"."
+  "description":"חברת הדברה מקצועית במרכז. רישיון מדביר במבנים ובשטח פתוח מס׳ "+LICENSE+"."
 }
 
-def page(path, title, desc, body, schema=None, noindex=False):
+def page(path, title, desc, body, schema=None, noindex=False, head_extra=""):
     sch = [LB] + (schema or [])
     sch_html = "".join(f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>' for s in sch)
     robots = '<meta name="robots" content="noindex">' if noindex else ''
@@ -76,7 +76,7 @@ def page(path, title, desc, body, schema=None, noindex=False):
 <link rel="icon" href="/assets/icon.png?v=2"><link rel="apple-touch-icon" href="/assets/icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&amp;display=swap">
-<link rel="preload" as="image" href="/assets/photo-sprayer.webp" fetchpriority="high">
+{head_extra or '<link rel="preload" as="image" href="/assets/photo-sprayer.webp" fetchpriority="high">'}
 <link rel="stylesheet" href="/assets/style.css?v={VER}">
 <script src="/assets/track.js?v={VER}"></script>
 {sch_html}
@@ -103,7 +103,7 @@ def footer():
     cities = "".join(f'<li><a href="{url(c["path"])}">הדברה {c["prep"]}</a></li>' for c in CITIES[:6])
     return f'''<footer class="ftr"><div class="wrap">
 <div class="cols">
-<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.svg" alt="הדברה 360" width="348" height="160" loading="lazy"></span><span>חברת הדברה מקצועית. רישיון מדביר ראשי מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
+<div style="max-width:300px;display:flex;flex-direction:column;gap:12px"><span class="lg"><img src="/assets/logo.svg" alt="הדברה 360" width="348" height="160" loading="lazy"></span><span>חברת הדברה מקצועית. רישיון מדביר במבנים ובשטח פתוח מס׳ {LICENSE}. חומרים מאושרים ע״י המשרד להגנת הסביבה.</span></div>
 <div><h3>הדברת מזיקים</h3><ul>{pests}<li><a href="{url("הדברת-מזיקים")}">כל המזיקים</a></li></ul></div>
 <div><h3>אזורי שירות</h3><ul>{cities}<li><a href="{url("אזורי-שירות")}">כל האזורים</a></li></ul></div>
 <div><h3>החברה</h3><ul><li><a href="{url("אודות")}">אודות</a></li><li><a href="{url("מחירון")}">מחירון הדברה</a></li><li><a href="{url("המלצות")}">ביקורות</a></li><li><a href="{url("שאלות-נפוצות")}">שאלות נפוצות</a></li><li><a href="{url("בלוג")}">מדריכים</a></li><li><a href="{url("אחריות")}">אחריות</a></li></ul></div>
@@ -260,14 +260,18 @@ TOP = [p for p in PESTS if p.get("top")]
 TOP_TILES = TOP + [SERV_BY["הרחקת-יונים"] | {"name":"הרחקת יונים"}, SERV_BY["לוכד-נחשים"] | {"name":"לכידת נחשים"}]
 
 # Home
-home = f'''<section class="hero" style="background-image:url('/assets/photo-sprayer.webp')"><div class="ov">{NOBUG}<div class="wrap">
-<span class="badge">רישיון מדביר ראשי מס׳ {LICENSE} · חומרים מאושרים ע״י המשרד להגנת הסביבה</span>
-<h1>אנחנו באים לפתור לכם את הבעיה!</h1>
-<p class="lead">הדברה מקצועית לכל סוגי המזיקים, לבתים, לבניינים ולעסקים. מדביר מוסמך מגיע אליכם בזמן, עם אחריות בכתב.</p>
-<div class="price"><span>הדברה החל מ־</span><strong>{PRICE_FROM} ₪</strong>{nobug(mini=True)}</div>
-<div class="ctas">{phone_btn()}{wa_btn()}</div>
+HOME_HEAD = '<link rel="preload" as="image" href="/assets/hero-home.webp" media="(min-width:900px)" fetchpriority="high"><link rel="preload" as="image" href="/assets/hero-home-mob.webp" media="(max-width:899px)" fetchpriority="high">\n<style>.hero.home .nobug,.hero.home .nobug-mini{display:none!important}.hero.home .ov{background:linear-gradient(to left,rgba(1,36,52,.85) 0%,rgba(1,36,52,.6) 45%,rgba(1,36,52,.08) 85%)}@media(max-width:899px){.hero.home{background-image:url(\'/assets/hero-home-mob.webp\')!important;background-size:100% auto;background-position:center -15vw;background-color:#012434}.hero.home .ov{background:none}.hero.home .wrap{margin-top:85vw;background:#012434;border-radius:24px 24px 0 0;padding-top:22px;box-shadow:0 -12px 30px rgba(0,0,0,.25)}.hero.home .badge{position:absolute;top:calc(-85vw + 18px);right:20px;left:20px;background:rgba(1,36,52,.82);color:#d9f5b8;text-align:center;font-size:14px}}.hero.home .v4{list-style:none;padding:0;margin:0;display:grid;gap:9px;font-size:clamp(17px,1.7vw,20px);font-weight:600;color:#fff}.hero.home .v4 li{display:flex;gap:10px;align-items:center}.hero.home .v4 li::before{content:"✓";flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:15px}.tcards{max-width:1100px;margin:-70px auto 0;position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-radius:20px;box-shadow:0 14px 40px rgba(1,52,74,.15);padding:22px 10px}.tcards .tc{text-align:center;padding:6px 18px;border-left:1px dashed #cfe5bd}.tcards .tc:last-child{border-left:none}.tcards svg{width:38px;height:38px;display:block;margin:0 auto 6px}.tcards b{display:block;font-size:19px;color:#01344A}.tcards span{color:#4B6472;font-size:15px}.tcards+.leadwrap .lead-form{margin-top:28px}@media(max-width:899px){.hero.home .wrap{padding-bottom:28px!important}.tcards{margin:18px 14px 0;grid-template-columns:1fr;padding:6px 14px}.tcards .tc{border-left:none;border-bottom:1px dashed #cfe5bd;padding:12px 4px;display:grid;grid-template-columns:44px 1fr;text-align:right;align-items:center;column-gap:10px}.tcards .tc svg{grid-row:span 2;margin:0}.tcards .tc:last-child{border-bottom:none}}</style>'
+home = f'''<section class="hero home" style="background-image:url('/assets/hero-home.webp')"><div class="ov"><div class="nobug" aria-hidden="true"><img src="/assets/no-roach.svg" alt="" width="120" height="120" decoding="async"></div><div class="wrap">
+<span class="badge">רישיון מדביר במבנים ובשטח פתוח מס׳ {LICENSE} · חומרים מאושרים ע״י המשרד להגנת הסביבה</span>
+<h1>בית נקי ממזיקים<br>עם אחריות בכתב</h1>
+<ul class="v4"><li>מדביר מוסמך עם ניסיון בבתים, בניינים ועסקים</li><li>מחיר ברור מראש, בלי הפתעות בסוף</li><li>פותרים את הבעיה מהשורש, לא רק מרססים</li><li>גם אחרי הטיפול אנחנו כאן, לכל שאלה</li></ul>
+<div class="price"><span>הדברה החל מ־</span><strong>250 ₪</strong><div class="nobug-mini" aria-hidden="true"><img src="/assets/no-roach.svg" alt="" width="120" height="120" decoding="async"></div></div>
+<div class="ctas"><a class="btn btn-g" href="tel:0559992266"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>חייגו: <span class="ltr">055-9992266</span></span></a><a class="btn btn-o" href="https://api.whatsapp.com/send?phone=972559992266&amp;text=שלום! אני פונה אליכם מאתר הדברה 360, חזרו אליי בבקשה" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg>וואטסאפ</a></div>
 <ul class="checks"><li>ייעוץ והצעת מחיר בחינם</li><li>אחריות מלאה בכתב</li><li>הגעה בזמן שנקבע</li></ul>
 </div></div></section>
+<div class="tcards"><div class="tc"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4 8 10v12c0 11 7 19 16 22 9-3 16-11 16-22V10z" fill="#E3F1F7" stroke="#01344A" stroke-width="2.5" stroke-linejoin="round"/><path d="m17 24 5 5 9-10" fill="none" stroke="#80CD29" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>אחריות בכתב</b><span>על כל טיפול, ביומן ביצוע מסודר</span></div>
+<div class="tc"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18" fill="#E3F1F7" stroke="#01344A" stroke-width="2.5"/><path d="M24 13v11l7 5" fill="none" stroke="#01344A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><b>מגיעים בזמן</b><span>בתיאום מראש, גם בערב</span></div>
+<div class="tc"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M40 8C22 8 10 16 10 30c0 3 1 6 2 8 2-9 9-16 18-20-7 5-12 11-15 21 3 1 6 1 8 1 13 0 17-13 17-32z" fill="#80CD29" stroke="#3f8f12" stroke-width="2" stroke-linejoin="round"/></svg><b>חומרים מאושרים</b><span>בטוח לבית עם ילדים ובעלי חיים</span></div></div>
 {lead_form()}
 <section class="sec"><div class="wrap split">
 <div><span class="eyebrow">למה הדברה 360</span><h2>הדברה מקצועית, ב־360 מעלות</h2>
@@ -296,7 +300,7 @@ home = f'''<section class="hero" style="background-image:url('/assets/photo-spra
 <div><h2>אזורי שירות</h2><p class="intro" style="margin:16px 0">מגיעים אליכם בכל אזור המרכז:</p>{city_chips()}</div>
 </div></section>
 {ctaband("יש מזיק בבית? נפתור את זה היום.", f"הדברה החל מ־{PRICE_FROM} ₪ · ייעוץ והצעת מחיר בחינם.")}'''
-pages[""] = page("", f"הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־{PRICE_FROM} ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home)
+pages[""] = page("", f"הדברה 360 | חברת הדברה מקצועית במרכז, החל מ־{PRICE_FROM} ₪", "הדברה מקצועית לכל סוגי המזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים ועוד. מדביר מוסמך, רישיון 2849, אחריות בכתב. חייגו 055-9992266.", home, head_extra=HOME_HEAD)
 
 # ---------------- Guides (blog) ----------------
 def gtext(s):
