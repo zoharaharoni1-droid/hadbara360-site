@@ -175,10 +175,10 @@ def nobug(kind="roach", mini=False):
     return f'<div class="{"nobug-mini" if mini else "nobug"}" aria-hidden="true"><img src="{src}" alt="" width="120" height="120" decoding="async"></div>'
 NOBUG = nobug()
 
-def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=False, bug="roach", icon=True):
+def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=False, bug="roach", icon=True, pos=""):
     # מחיר "החל מ־" מוצג רק בעמוד הבית
     price = ''
-    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp')"><div class="ov">{nobug(bug) if icon else ""}<div class="wrap">
+    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp'){";background-position:" + pos if pos else ""}"><div class="ov">{nobug(bug) if icon else ""}<div class="wrap">
 {crumbs_html(trail)}
 <h1 style="margin-top:20px">{h1}</h1>
 <p class="lead">{lead}</p>
@@ -414,7 +414,7 @@ for s in SERVICES:
         svc_schema = {"@context":"https://schema.org","@type":"Service","serviceType":s["name"],"name":d["h1"],"areaServed":"מרכז הארץ","provider":{"@type":"PestControl","name":"הדברה 360","telephone":"+972-55-999-2266","url":DOMAIN+"/"}}
         lis = "".join(f'<li><a href="#s{i+1}">{E(h)}</a></li>' for i, h in enumerate(toc)) + '<li><a href="#faq">שאלות נפוצות</a></li>'
         toc_box = f'<section class="sec tocsec"><div class="wrap narrow"><nav class="toc" aria-label="תוכן העניינים"><details class="toc-m"><summary>מה בעמוד הזה</summary><ol>{lis}</ol></details><div class="toc-d"><strong>מה בעמוד הזה</strong><ol>{lis}</ol></div></nav></div></section>'
-        body = f'''{sub_hero(trail, d["h1"], E(d["lead"]), s["img"], icon=False)}
+        body = f'''{sub_hero(trail, d["h1"], E(d["lead"]), s["img"], icon=False, pos=d.get("pos",""))}
 {toc_box}
 {secs}
 <section class="sec"><div class="wrap narrow prose svc-deep"><h2 id="faq">שאלות נפוצות על הדברה בדירה</h2>{faq_html(d["faq"])}</div></section>
@@ -422,7 +422,7 @@ for s in SERVICES:
 <section class="sec"><div class="wrap"><h2 style="font-size:26px;margin-bottom:16px">שירותים נוספים</h2><div class="tiles">{"".join(f'<a class="tile" href="{url(x["path"])}">{x["name"]}</a>' for x in others)}</div>
 <h2 style="font-size:26px;margin:34px 0 16px">סוגי מזיקים</h2>{pest_tiles(TOP)}</div></section>
 {ctaband(s["name"] + "? דברו איתנו עכשיו.")}'''
-        pages[s["path"]] = page(s["path"], d["title"], d["desc"], body, [crumbs_schema(trail), faq_schema(d["faq"]), svc_schema], head_extra=SVC_HEAD)
+        pages[s["path"]] = page(s["path"], d["title"], d["desc"], body, [crumbs_schema(trail), faq_schema(d["faq"]), svc_schema], head_extra=SVC_HEAD.replace('photo-sprayer', s['img']))
 
 trail = [("דף הבית",""),("שירותי הדברה","שירותי-הדברה")]
 body = f'''{sub_hero(trail, "שירותי הדברה", "הדברה לדירות, לבתים פרטיים, לבניינים, לעסקים ולמוסדות, בשיטה שמתאימה לכל מקום.")}
