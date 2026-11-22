@@ -411,7 +411,7 @@ for s in SERVICES:
                 secs += ctaband(*d.get("mid_cta", ("רוצים הצעת מחיר מדויקת לדירה שלכם?", "שיחה קצרה, ואתם יודעים בדיוק כמה זה עולה — לפני שמתחילים.")))
             k += 1
             if h.startswith("אחריות"):
-                secs += TRUST_DEEP.replace('class="sec soft"', 'class="sec soft"' if k % 2 else 'class="sec"'); k += 1
+                secs += TRUST_DEEP.replace('class="sec soft"', 'class="sec soft"' if k % 2 else 'class="sec"').replace('משתמשים רק בחומרים שמאושרים לשימוש בבתי מגורים, במינון לפי ההוראות.', d.get('trust_mat', 'משתמשים רק בחומרים שמאושרים לשימוש בבתי מגורים, במינון לפי ההוראות.')); k += 1
         svc_schema = {"@context":"https://schema.org","@type":"Service","serviceType":s["name"],"name":d["h1"],"areaServed":"מרכז הארץ","provider":{"@type":"PestControl","name":"הדברה 360","telephone":"+972-55-999-2266","url":DOMAIN+"/"}}
         lis = "".join(f'<li><a href="#s{i+1}">{E(h)}</a></li>' for i, h in enumerate(toc)) + '<li><a href="#faq">שאלות נפוצות</a></li>'
         toc_box = f'<section class="sec tocsec"><div class="wrap narrow"><nav class="toc" aria-label="תוכן העניינים"><details class="toc-m"><summary>תוכן עניינים <span class="hint">· לחצו לפתיחה</span></summary><ol>{lis}</ol></details><div class="toc-d"><div class="toc-t">תוכן עניינים</div><ol>{lis}</ol></div></nav></div></section>'
