@@ -9,6 +9,7 @@ from deep_cities import CITIES_NEW, DEEP_CITIES
 from deep_local import LOCAL
 from deep_combos import COMBO_PESTS, COMBO_CITIES, COMBOS
 from guides import GUIDES
+from deep_services import DEEP_SERVICES
 CITIES = CITIES[:-1] + CITIES_NEW + CITIES[-1:]   # "המרכז" נשאר אחרון
 DEEP_PESTS = {**DEEP_PESTS_1, **DEEP_PESTS_2}
 WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום! אני שולח/ת תמונה של מזיק לזיהוי (מאתר הדברה 360)"
@@ -174,10 +175,10 @@ def nobug(kind="roach", mini=False):
     return f'<div class="{"nobug-mini" if mini else "nobug"}" aria-hidden="true"><img src="{src}" alt="" width="120" height="120" decoding="async"></div>'
 NOBUG = nobug()
 
-def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=False, bug="roach"):
+def sub_hero(trail, h1, lead, img="photo-sprayer", show_price=False, bug="roach", icon=True):
     # מחיר "החל מ־" מוצג רק בעמוד הבית
     price = ''
-    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp')"><div class="ov">{nobug(bug)}<div class="wrap">
+    return f'''<section class="hero sub" style="background-image:url('/assets/{img}.webp')"><div class="ov">{nobug(bug) if icon else ""}<div class="wrap">
 {crumbs_html(trail)}
 <h1 style="margin-top:20px">{h1}</h1>
 <p class="lead">{lead}</p>
@@ -377,6 +378,8 @@ body = f'''{sub_hero(trail, "הדברת מזיקים מכל הסוגים", "תי
 pages["הדברת-מזיקים"] = page("הדברת-מזיקים", "הדברת מזיקים: כל סוגי המזיקים | הדברה 360", "מדריך הדברת מזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים, פרעושים, טרמיטים ועוד. מדביר מוסמך עם אחריות בכתב.", body, [crumbs_schema(trail)])
 
 # Services
+TRUST_DEEP = '<section class="sec soft"><div class="wrap"><h2 style="text-align:center;margin-bottom:24px">למה אפשר לסמוך עלינו</h2><div class="trust3"><div><span class="ti"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2.2"/><path d="M6 15c.6-1.4 1.7-2 3-2s2.4.6 3 2M14 9h4M14 12h3"/></svg></span><h3>מדביר מוסמך</h3><p>רישיון מדביר במבנים ובשטח פתוח מס׳ ' + str(LICENSE) + ', בתוקף.</p></div><div><span class="ti"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><h3>חומרים מאושרים</h3><p>משתמשים רק בחומרים שמאושרים לשימוש בבתי מגורים, במינון לפי ההוראות.</p></div><div><span class="ti"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg></span><h3>יומן ביצוע בכתב</h3><p>בסוף כל טיפול מקבלים יומן מפורט: מה נעשה, באילו חומרים, והנחיות ברורות.</p></div></div></div></section>'
+SVC_HEAD = '<link rel="preload" as="image" href="/assets/photo-sprayer.webp" fetchpriority="high"><style>.svc-deep h2{font-size:30px;margin-top:26px;color:var(--navy)}.svc-deep h2:first-child{margin-top:0}.svc-deep .list li{margin-bottom:6px}.svc-deep ol.list{padding-right:22px}.svc-deep .tablebox{margin:4px 0}.svc-deep .tiles{margin-top:4px}@media(max-width:899px){.svc-deep h2{font-size:25px}}.svc-deep ul.list{list-style:none;padding-right:0}.svc-deep ul.list li{position:relative;padding-right:30px}.svc-deep ul.list li::before{content:"";position:absolute;right:0;top:.2em;width:20px;height:20px;border-radius:50%;background:#5DB02B url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%273.2%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M6 12.5l4 4 8-9%27/%3E%3C/svg%3E") center/13px no-repeat}.callout{margin:18px 0;padding:18px 20px;border-radius:14px;background:#EAF6FC;border-right:5px solid #0F6E8C}.callout strong{display:block;color:var(--navy);font-size:19px;margin-bottom:6px}.callout p{margin:0}.trust3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.trust3>div{background:#fff;border:1px solid #E3ECEF;border-radius:16px;padding:22px;box-shadow:0 2px 14px rgba(1,52,74,.08);text-align:center}.trust3 .ti{display:inline-flex;width:56px;height:56px;border-radius:50%;background:#EAF6FC;color:#0F6E8C;align-items:center;justify-content:center}.trust3 h3{margin:12px 0 6px;font-size:20px;color:var(--navy)}.trust3 p{margin:0;color:var(--text2)}@media(max-width:899px){.trust3{grid-template-columns:1fr}}.svc-deep td.pr{white-space:nowrap}.svc-deep h2[id],#faq{scroll-margin-top:96px}.tocsec{padding-bottom:0}.tocsec+.sec{padding-top:44px}.toc{background:#fff;border:1px solid #E3ECEF;border-radius:16px;padding:18px 22px;box-shadow:0 2px 14px rgba(1,52,74,.06)}.toc strong,.toc summary{font-size:19px;font-weight:800;color:var(--navy)}.toc ol{margin:10px 0 0;padding-right:22px;columns:2;column-gap:32px}.toc li{margin-bottom:7px;break-inside:avoid}.toc a{color:#0F6E8C;text-decoration:none;font-weight:600}.toc a:hover{text-decoration:underline}.toc-m{display:none}.toc summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}.toc summary::-webkit-details-marker{display:none}.toc summary::after{content:"+";font-size:26px;color:#5DB02B;line-height:1}.toc details[open] summary::after{content:"−"}@media(max-width:899px){.toc-d{display:none}.toc-m{display:block}.toc ol{columns:1}.toc{padding:14px 18px}}.svc-deep table.prices td:nth-child(3){font-weight:400;white-space:normal}@media(max-width:899px){.svc-deep .tablebox{overflow:visible;border:0;box-shadow:none;background:none}.svc-deep table.prices,.svc-deep table.prices tbody,.svc-deep table.prices tr,.svc-deep table.prices td{display:block;width:auto}.svc-deep table.prices thead{display:none}.svc-deep table.prices tr{background:#fff;border:1px solid #E3ECEF;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(1,52,74,.06)}.svc-deep table.prices td{border:0;padding:4px 0}.svc-deep table.prices td.tp{font-size:19px;color:var(--navy);padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid #E3ECEF}.svc-deep table.prices td[data-l]::before{content:attr(data-l) ": ";font-weight:700;color:var(--navy)}}</style>'
 for s in SERVICES:
     trail = [("דף הבית",""),("שירותי הדברה","שירותי-הדברה"),(s["name"],s["path"])]
     pts = "".join(f"<li>{E(x)}</li>" for x in s["points"])
@@ -391,6 +394,35 @@ for s in SERVICES:
 <h2 style="font-size:26px;margin:34px 0 16px">סוגי מזיקים</h2>{pest_tiles(TOP)}</div></section>
 {ctaband(s["name"] + "? דברו איתנו עכשיו.")}'''
     pages[s["path"]] = page(s["path"], f'{s["h1"]} | הדברה 360', f'{s["h1"]} במרכז: {s["intro"][:90]}... חייגו {PHONE}.', body, [crumbs_schema(trail)])
+    if s["path"] in DEEP_SERVICES:
+        d = DEEP_SERVICES[s["path"]]
+        trs = "".join(f"<tr><td class=\"tp\"><strong>{E(a)}</strong></td><td data-l=\"שיטת הטיפול\">{E(b)}</td><td data-l=\"יציאה מהבית\">{E(c)}</td></tr>" for a,b,c in d["table"])
+        table = f'<div class="tablebox"><table class="prices"><thead><tr><th scope="col">מזיק</th><th scope="col">שיטת הטיפול</th><th scope="col">יציאה מהבית</th></tr></thead><tbody>{trs}</tbody></table></div>'
+        city_links = '<p>אנחנו מבצעים הדברת דירות בכל אזור המרכז. מידע על הדברה בעיר שלכם:</p><div class="tiles">' + "".join(f'<a class="tile" href="{url(c["path"])}">הדברה {c["prep"]}</a>' for c in CITIES if c.get("prep")) + '</div>'
+        secs = ""; k = 0; toc = []
+        for h, htm in d["sections"]:
+            mid = "__TABLE__" in htm
+            htm = htm.replace("__TABLE__", table).replace("__CITIES__", city_links)
+            htm = re.sub(r"__URL_([^_]+(?:-[^_]+)*)__", lambda m: url(m.group(1)), htm)
+            toc.append(h)
+            secs += f'<section class="sec{" soft" if k % 2 else ""}"><div class="wrap {"" if mid else "narrow "}prose svc-deep"><h2 id="s{len(toc)}">{E(h)}</h2>{htm}</div></section>'
+            if mid:
+                secs += ctaband("רוצים הצעת מחיר מדויקת לדירה שלכם?", "שיחה קצרה, ואתם יודעים בדיוק כמה זה עולה — לפני שמתחילים.")
+            k += 1
+            if h.startswith("אחריות"):
+                secs += TRUST_DEEP.replace('class="sec soft"', 'class="sec soft"' if k % 2 else 'class="sec"'); k += 1
+        svc_schema = {"@context":"https://schema.org","@type":"Service","serviceType":s["name"],"name":d["h1"],"areaServed":"מרכז הארץ","provider":{"@type":"PestControl","name":"הדברה 360","telephone":"+972-55-999-2266","url":DOMAIN+"/"}}
+        lis = "".join(f'<li><a href="#s{i+1}">{E(h)}</a></li>' for i, h in enumerate(toc)) + '<li><a href="#faq">שאלות נפוצות</a></li>'
+        toc_box = f'<section class="sec tocsec"><div class="wrap narrow"><nav class="toc" aria-label="תוכן העניינים"><details class="toc-m"><summary>מה בעמוד הזה</summary><ol>{lis}</ol></details><div class="toc-d"><strong>מה בעמוד הזה</strong><ol>{lis}</ol></div></nav></div></section>'
+        body = f'''{sub_hero(trail, d["h1"], E(d["lead"]), s["img"], icon=False)}
+{toc_box}
+{secs}
+<section class="sec"><div class="wrap narrow prose svc-deep"><h2 id="faq">שאלות נפוצות על הדברה בדירה</h2>{faq_html(d["faq"])}</div></section>
+<section class="sec soft"><div class="wrap"><h2 style="margin-bottom:22px">מה הלקוחות אומרים</h2>{reviews_html(REVIEWS[:3])}</div></section>
+<section class="sec"><div class="wrap"><h2 style="font-size:26px;margin-bottom:16px">שירותים נוספים</h2><div class="tiles">{"".join(f'<a class="tile" href="{url(x["path"])}">{x["name"]}</a>' for x in others)}</div>
+<h2 style="font-size:26px;margin:34px 0 16px">סוגי מזיקים</h2>{pest_tiles(TOP)}</div></section>
+{ctaband(s["name"] + "? דברו איתנו עכשיו.")}'''
+        pages[s["path"]] = page(s["path"], d["title"], d["desc"], body, [crumbs_schema(trail), faq_schema(d["faq"]), svc_schema], head_extra=SVC_HEAD)
 
 trail = [("דף הבית",""),("שירותי הדברה","שירותי-הדברה")]
 body = f'''{sub_hero(trail, "שירותי הדברה", "הדברה לדירות, לבתים פרטיים, לבניינים, לעסקים ולמוסדות, בשיטה שמתאימה לכל מקום.")}
