@@ -10,6 +10,7 @@ from deep_local import LOCAL
 from deep_combos import COMBO_PESTS, COMBO_CITIES, COMBOS
 from guides import GUIDES
 from deep_services import DEEP_SERVICES
+from deep_roaches import DEEP_ROACHES
 CITIES = CITIES[:-1] + CITIES_NEW + CITIES[-1:]   # "המרכז" נשאר אחרון
 DEEP_PESTS = {**DEEP_PESTS_1, **DEEP_PESTS_2}
 WA_PHOTO = "https://api.whatsapp.com/send?phone=972559992266&text=" + "שלום! אני שולח/ת תמונה של מזיק לזיהוי (מאתר הדברה 360)"
@@ -322,6 +323,9 @@ def guide_box(path):
     return '<div class="gbox"><strong>מדריך מומלץ:</strong> ' + " · ".join(f'<a href="{url(gpath(g))}">{E(g["h1"])}</a>' for g in gs) + '</div>'
 
 # Pest pages
+ROACH_TYPES_HTML = '<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:16px"><div style="flex:1 1 260px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px"><span style="display:inline-block;background:#0f5c7a;color:#fff;border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700">ג׳וקים גדולים</span><h3 style="font-size:22px;margin:10px 0 6px"><a href="__U1__" style="color:var(--navy)">תיקן אמריקאי</a></h3><p style="margin:0 0 8px">גדול, חום־אדמדם, עולה מהביוב והניקוזים. מטפלים בריסוס — כללי או ממוקד בניקוזים.</p><a href="__U1__" style="font-weight:800">למדריך המלא ←</a></div><div style="flex:1 1 260px;background:#fff;border:2px solid #7ed321;border-radius:16px;padding:18px 20px"><span style="display:inline-block;background:#0f5c7a;color:#fff;border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700">ג׳וקים קטנים</span><h3 style="font-size:22px;margin:10px 0 6px"><a href="__U2__" style="color:var(--navy)">תיקן גרמני</a></h3><p style="margin:0 0 8px">קטן, בהיר עם שני פסים כהים, חי בתוך המטבח. מטפלים בג׳לים ובמלכודות, בלי לצאת מהבית.</p><a href="__U2__" style="font-weight:800">למדריך המלא ←</a></div></div>'
+ROACH_TYPES_HTML = ROACH_TYPES_HTML.replace("__U1__", url("הדברת-מזיקים/הדברת-תיקן-אמריקאי")).replace("__U2__", url("הדברת-מזיקים/הדברת-תיקן-גרמני"))
+ROACH_BOX = '<h3 id="types" style="font-size:24px;margin-top:34px;scroll-margin-top:90px">סוגי התיקנים בישראל</h3><p style="margin-top:10px">שני הסוגים הנפוצים בבתים ובעסקים הם התיקן האמריקאי והתיקן הגרמני, ולכל אחד מהם יש מדריך מלא:</p>' + ROACH_TYPES_HTML + '<p style="margin-top:16px">יש בארץ עוד שני סוגים, פחות נפוצים: <strong>התיקן המזרחי</strong> — כהה, כמעט שחור, שאוהב מקומות לחים כמו מרתפים וביוב — ו<strong>התיקן חום־הפסים</strong>, תיקן קטן עם פסים בהירים, שמסתתר במקומות יבשים וחמים, גם בריהוט ובמכשירי חשמל. לא בטוחים איזה סוג יש לכם? שלחו תמונה בוואטסאפ ונזהה.</p>'
 for p in PESTS:
     d = DEEP_PESTS.get(p["path"], {})
     trail = [("דף הבית",""),("הדברת מזיקים","הדברת-מזיקים"),(p["name"],p["path"])]
@@ -330,6 +334,7 @@ for p in PESTS:
     others = [q for q in PESTS if q["path"] != p["path"]][:8]
     rev = [r for r in REVIEWS if "פשפש" in r[1]] if "פשפש" in p["name"] else REVIEWS[1:3]
     toc = [("about", f"מה צריך לדעת על {p['name']}"), ("signs","סימנים לנגיעות")]
+    if p["path"]=="הדברת-מזיקים/הדברת-תיקנים": toc.insert(1, ("types","סוגי התיקנים בישראל"))
     if d.get("why"): toc.append(("why","למה הם מגיעים"))
     toc += [("treat","איך אנחנו מטפלים"),("price","כמה זה עולה")]
     if p.get("prep"): toc.append(("prep","איך מתכוננים"))
@@ -346,6 +351,7 @@ for p in PESTS:
 {toc_html(toc)}
 {H2("about", f"מה צריך לדעת על {p['name']}", ";margin-top:34px")}
 <div class="prose" style="margin-top:16px"><p>{E(p["intro"])}</p>{about}</div>
+{ROACH_BOX if p["path"]=="הדברת-מזיקים/הדברת-תיקנים" else ""}
 <h3 id="signs" style="font-size:24px;margin-top:34px;scroll-margin-top:90px">סימנים לנגיעות</h3>
 <div class="signs">{signs}</div>
 {f'{H2("why","למה הם מגיעים",";margin-top:40px;font-size:30px")}<div class="prose" style="margin-top:14px">' + "".join(f"<p>{E(x)}</p>" for x in d["why"]) + (f'<p><strong>למה לא לחכות:</strong> {E(d["risks"])}</p>' if d.get("risks") else "") + '</div>' if d.get("why") else ""}
@@ -374,6 +380,7 @@ for p in PESTS:
 trail = [("דף הבית",""),("הדברת מזיקים","הדברת-מזיקים")]
 body = f'''{sub_hero(trail, "הדברת מזיקים מכל הסוגים", "תיקנים, נמלים, פשפש מיטה, מכרסמים, טרמיטים ועוד. בחרו את המזיק ותגלו איך מזהים אותו ואיך אנחנו מטפלים בו.")}
 <section class="sec"><div class="wrap"><h2 style="margin-bottom:24px">בחרו מזיק</h2>{pest_tiles(PESTS, more=False)}
+<h2 style="margin:48px 0 24px">מדריכים לפי סוג תיקן</h2><div class="tiles"><a class="tile" href="{url("הדברת-מזיקים/הדברת-תיקן-אמריקאי")}">תיקן אמריקאי (ג׳וקים גדולים)</a><a class="tile" href="{url("הדברת-מזיקים/הדברת-תיקן-גרמני")}">תיקן גרמני (ג׳וקים קטנים)</a></div>
 <h2 style="margin:48px 0 24px">שירותים נוספים</h2><div class="tiles"><a class="tile" href="{url("הרחקת-יונים")}">הרחקת יונים</a><a class="tile" href="{url("לוכד-נחשים")}">לכידת נחשים</a></div></div></section>
 {ctaband("לא בטוחים מה המזיק? שלחו תמונה ונזהה.")}'''
 pages["הדברת-מזיקים"] = page("הדברת-מזיקים", "הדברת מזיקים: כל סוגי המזיקים | הדברה 360", "מדריך הדברת מזיקים: תיקנים, נמלים, פשפש מיטה, מכרסמים, פרעושים, טרמיטים ועוד. מדביר מוסמך עם אחריות בכתב.", body, [crumbs_schema(trail)])
@@ -425,6 +432,43 @@ for s in SERVICES:
 <h2 style="font-size:26px;margin:34px 0 16px">סוגי מזיקים</h2>{pest_tiles(TOP)}</div></section>
 {ctaband(s["name"] + "? דברו איתנו עכשיו.")}'''
         pages[s["path"]] = page(s["path"], d["title"], d["desc"], body, [crumbs_schema(trail), faq_schema(d["faq"]), svc_schema], head_extra=SVC_HEAD.replace('photo-sprayer', s['img']))
+
+
+# Deep pest pages (סוגי תיקנים) — אותו מבנה כמו דפי השירות
+for path, d in DEEP_ROACHES.items():
+    s = dict(path=path, name=d["name"], img=d["img"])
+    trail = [("דף הבית",""),("הדברת מזיקים","הדברת-מזיקים"),("תיקנים","הדברת-מזיקים/הדברת-תיקנים"),(d["name"],path)]
+    others = [dict(path=q, name=v["name"]) for q, v in DEEP_ROACHES.items() if q != path] + [dict(path="הדברת-מזיקים/הדברת-תיקנים", name="כל סוגי התיקנים")] + [x for x in SERVICES if x["path"] in ("הדברה-בדירות","הדברת-בניינים","אחזקה-שותפת-למסעדות","הדברה-בלי-לצאת-מהבית")]
+    if True:
+        cols = d.get("cols", ["מזיק", "שיטת הטיפול", "יציאה מהבית"])
+        trs = "".join("<tr><td class=\"tp\"><strong>" + E(row[0]) + "</strong></td>" + "".join(f"<td data-l=\"{cols[i]}\">{E(v)}</td>" for i, v in enumerate(row) if i) + "</tr>" for row in d["table"])
+        table = '<div class="tablebox"><table class="prices"><thead><tr>' + "".join(f'<th scope="col">{c}</th>' for c in cols) + f'</tr></thead><tbody>{trs}</tbody></table></div>'
+        city_links = '<p>' + d.get('cities_p', 'אנחנו מבצעים הדברת דירות בכל אזור המרכז. מידע על הדברה בעיר שלכם:') + '</p><div class="tiles">' + "".join(f'<a class="tile" href="{url(c["path"])}">הדברה {c["prep"]}</a>' for c in CITIES if c.get("prep")) + '</div>'
+        secs = ""; k = 0; toc = []
+        for h, htm in d["sections"]:
+            mid = "__TABLE__" in htm
+            htm = htm.replace("__TABLE__", table).replace("__CITIES__", city_links)
+            htm = re.sub(r"__URL_([^_]+(?:-[^_]+)*)__", lambda m: url(m.group(1)), htm)
+            toc.append(h)
+            secs += f'<section class="sec{" soft" if k % 2 else ""}"><div class="wrap {"" if mid else "narrow "}prose svc-deep"><h2 id="s{len(toc)}">{E(h)}</h2>{htm}</div></section>'
+            if mid:
+                secs += ctaband(*d.get("mid_cta", ("רוצים הצעת מחיר מדויקת לדירה שלכם?", "שיחה קצרה, ואתם יודעים בדיוק כמה זה עולה — לפני שמתחילים.")))
+            k += 1
+            if h.startswith("אחריות"):
+                secs += TRUST_DEEP.replace('class="sec soft"', 'class="sec soft"' if k % 2 else 'class="sec"').replace('משתמשים רק בחומרים שמאושרים לשימוש בבתי מגורים, במינון לפי ההוראות.', d.get('trust_mat', 'משתמשים רק בחומרים שמאושרים לשימוש בבתי מגורים, במינון לפי ההוראות.')); k += 1
+        svc_schema = {"@context":"https://schema.org","@type":"Service","serviceType":"הדברת "+s["name"],"name":d["h1"],"areaServed":"מרכז הארץ","provider":{"@type":"PestControl","name":"הדברה 360","telephone":"+972-55-999-2266","url":DOMAIN+"/"}}
+        lis = "".join(f'<li><a href="#s{i+1}">{E(h)}</a></li>' for i, h in enumerate(toc)) + '<li><a href="#faq">שאלות נפוצות</a></li>'
+        toc_box = f'<section class="sec tocsec"><div class="wrap narrow"><nav class="toc" aria-label="תוכן העניינים"><details class="toc-m"><summary>תוכן עניינים <span class="hint">· לחצו לפתיחה</span></summary><ol>{lis}</ol></details><div class="toc-d"><div class="toc-t">תוכן עניינים</div><ol>{lis}</ol></div></nav></div></section>'
+        body = f'''{sub_hero(trail, d["h1"], E(d["lead"]), s["img"], icon=False, pos=d.get("pos",""))}
+{toc_box}
+{secs}
+<section class="sec"><div class="wrap narrow prose svc-deep"><h2 id="faq">{d.get("faq_h", "שאלות נפוצות על הדברה בדירה")}</h2>{faq_html(d["faq"])}</div></section>
+<section class="sec soft"><div class="wrap"><h2 style="margin-bottom:22px">מה הלקוחות אומרים</h2>{reviews_html(REVIEWS[:3])}</div></section>
+<section class="sec"><div class="wrap"><h2 style="font-size:26px;margin-bottom:16px">עוד באתר</h2><div class="tiles">{"".join(f'<a class="tile" href="{url(x["path"])}">{x["name"]}</a>' for x in others)}</div>
+<h2 style="font-size:26px;margin:34px 0 16px">סוגי מזיקים</h2>{pest_tiles(TOP)}</div></section>
+{ctaband(s["name"] + "? דברו איתנו עכשיו.")}'''
+        pages[s["path"]] = page(s["path"], d["title"], d["desc"], body, [crumbs_schema(trail), faq_schema(d["faq"]), svc_schema], head_extra=SVC_HEAD.replace('photo-sprayer', s['img']))
+
 
 trail = [("דף הבית",""),("שירותי הדברה","שירותי-הדברה")]
 body = f'''{sub_hero(trail, "שירותי הדברה", "הדברה לדירות, לבתים פרטיים, לבניינים, לעסקים ולמוסדות, בשיטה שמתאימה לכל מקום.")}
